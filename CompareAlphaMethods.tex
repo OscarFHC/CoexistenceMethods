@@ -1,0 +1,137 @@
+\documentclass[fleqn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\setlength{\parindent}{4em}
+\renewcommand{\baselinestretch}{2}
+
+\title{Comparing empirical methods measuring inter- and inter-specific interaction coefficient}
+\author{Feng-Hsun Chang}
+\date{April 2018}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+Contemporary coexistence theory is established on Chesson's key insight toward the mutual invasibility criterion of the classic Lokta-Volterra competition model \cite{Chesson1990, Chesson2000, Chesson2013, Chesson2008, Adler2007}. 
+
+
+\begin{equation}\label{eq:1}
+ \frac{dN_1}{dt} = r_1N_1(1 - \alpha_{11}N_1 - \alpha_{21}N_2)
+\end{equation}
+
+\begin{equation}\label{eq:2}
+ \frac{dN_2}{dt} = r_2N_2(1 - \alpha_{12}N_1 - \alpha_{22}N_2)
+\end{equation}
+
+
+In the classic Lokta-Volterra competition model, species are guaranteed to coexist when intra-specific interaction is greater than inter-specific interaction, i.e. $\alpha_{11} > \alpha_{12}$ and $\alpha_{22} > \alpha_{21}$. Chesson showed that this mutual invasibility criterion can be defined in terms that quantify the degree of niche overlap, $\rho$ between species and their difference between their average fitness, $\frac{f_2}{f_1}$ ($f_i$ is the same as the $k_i$ in Chesson's original paper). Chesson defines niche overlap ($\rho$) as $\sqrt{\frac{\alpha_{12} \alpha_{21}}{\alpha_{11} \alpha_{22}}}.$ The relative fitness difference (RDF; $\frac{f_2}{f_1}$ ) is defined as $\frac{\alpha_{12}}{\alpha_{22}}\frac{1}{\rho}$; therefore $ \frac{f_2}{f_1} = \sqrt{\frac{\alpha_{12}\alpha_{11}}{\alpha_{21}\alpha_{22}}}.$
+
+From the above definition and deduction, the ratio of inter- specific to intra- specific competition coefficients is equal to the product of a niche overlap term ($\rho$) and a fitness ratio term ($\frac{f_2}{f_1}$)
+
+\begin{equation}\label{eq:3}
+ \frac{\alpha_{12}}{\alpha_{22}} = \frac{f_2}{f_1}\rho
+\end{equation}
+
+\noindent From the mutual invasibility criterion, we know that the right hand side of Eq. 2 must be $<1$ for species 1 to be able to invade a population of species 2 at equilibrium. This is the same as saying $f_2/f_1 < 1/\rho$. By the same logic, for species 2 to be able to invade a population of species 1, $f_1/f_2 < 1/\rho$. Therefore, satisfaction of the mutual invasibility criterion, i.e., stable coexistence, requires 
+
+\begin{equation}\label{eq:4}
+ \rho < \frac{f_2}{f_1} < \frac{1}{\rho}.
+\end{equation}
+
+Since both niche overlap term ($\rho$) and a fitness ratio term ($\frac{f_2}{f_1}$) depend on inter- and intra-specific interaction coefficient ($\alpha_{ii}$ and $\alpha_{ij}$), estimation of $\alpha$s is critical in assessing species coexistence. Conceptually, $\alpha_{ij}$ captures the \textit{per capita} impact of species $j$ on species $i$. Four empirical methods so far are proposed to estimate $\alpha_{ij}$. These four methods include (1) Letten et al.'s method \cite{Letten2017}, (2) sensitivity method \cite{Carroll2011, Narwani2013}, (3) negative frequency dependency (NFD) method \cite{Levine2009, Hillerislambers2012}, and (4) calculating $\alpha$ by fitting growth curves to population dynamics. In this article I discuss if these four methods are actually estimating $\alpha$s in the following generic Lokta-Volterra competition model. 
+
+\newpage
+\section{Letten \textit{et al.} 2017's method}
+
+Letten \textit{et al.} 2017 reorganize the mechanistic consumer-resource model (\cite{Tilman1977}; equation \ref{eq:5} to \ref{eq:8}) to a phenological Lokta-Volterra form so that one can decipher the parameters impacting species' \textit{per capita} growth rate. 
+
+\begin{equation}\label{eq:5}
+ \frac{dN_1}{dt} = r_1\frac{R_2}{R_2+K_{12}} - DN_1
+\end{equation}
+
+\begin{equation}\label{eq:6}
+ \frac{dN_2}{dt} = r_2\frac{R_1}{R_1+K_{21}} - DN_2
+\end{equation}
+
+\begin{equation}\label{eq:7}
+ \frac{dR_1}{dt} = D(S_1 - R_1) - r_1\frac{R_1}{(R_1 + K_{11})y_11}N_1 - r_2\frac{R_1}{(R_1 + K_{21})y_21}N_2
+\end{equation}
+
+\begin{equation}\label{eq:8}
+ \frac{dR_2}{dt} = D(S_2 - R_2) - r_1\frac{R_2}{(R_2 + K_{12})y_12}N_1 - r_2\frac{R_2}{(R_2 + K_{22})y_22}N_2
+\end{equation}
+
+According to Letten \textit{et al.} the inter- and intra-specific interaction coefficients can be expressed as following, 
+
+\begin{equation}\label{eq:9}
+ \alpha_{11} = \frac{C_{12}}{y_{21} D (S_2 - R^*_2)} 
+\end{equation}
+
+\begin{equation}\label{eq:10}
+ \alpha_{12} = \frac{C_{22}}{y_{22} D (S_2 - R^*_2)} 
+\end{equation}
+
+\begin{equation}\label{eq:11}
+ \alpha_{22} = \frac{C_{21}}{y_{12} D (S_1 - R^*_1)} 
+\end{equation}
+
+\begin{equation}\label{eq:12}
+ \alpha_{21} = \frac{C_{11}}{y_{11} D (S_1 - R^*_1)} 
+\end{equation}
+
+\noindent In the above equations, $C_{ij}$ is the consumption of species $i$ on resource $j$, $D$ is the dilution rate, $y_{ij}$ is the yield of species $i$ per resource $j$, $S_{i}$ is the supply rate of resource $i$, and $R^*_i$ is the resource density at the equilibrium. 
+
+Note that the above consumption term ($C_{ij}$) is a function of resource density in the generic consumer-resource model, e.g. $C_{12} = \frac{r_1R_2}{R_2 + K_{12}}$. However, if the consumption term is resource density dependent, this linkage would not hold. The linkage between consumer-resource model and Lotka-Volterra model only exist when all the consumption of species $i$ on resource $j$ are resource density independent. For example, Letten \textit{et al.}'s predicted coexistence region will only match simulation results with empirical parameter values when letting $C_{ij}$ equals to $\frac{D}{y_{ij}}$. That is to say, Letten \textit{et al.}'s method only works in a special case of consumer-resource model.  
+ 
+\newpage
+\section{Sensitivity method}
+
+The idea of using sensitivity is to estimate $\alpha_{ij}$, i.e. the \textit{per capita} impact of one species ($j$) on the other species ($i$), as the reduction of species $i$'s growth rate due to species $j$. The sensitivity is therefore defined as the proportional reduction in invading species' growth rate due to inter-specific competition \cite{Carroll2011}. Specifically, it is calculated by dividing the difference between \textit{per capita} growth rate of species $i$ when growing alone ($\mu_{i}$) in monoculture and when invading species $j$ ($\mu_{ij}$) by the \textit{per capita} growth rate of species $i$ when growing alone $i$ \cite{Carroll2011, Narwani2013}. The following equation is the definition of sensitivity of species $i$ when invading species $j$. 
+
+\begin{equation}\label{eq:13}
+S_{ij} \equiv \frac{\mu_{i}-\mu_{ij}}{\mu_{i}}
+\end{equation}
+
+From the classic Lotka-Volterra competition model (equation \ref{eq:1} and \ref{eq:2}), $\mu_{i} = r_i$ and $\mu_{ij} = r_i(1-\alpha_{ij}N^*_j)$. Consequently, 
+
+\begin{equation}\label{eq:14}
+S_i \equiv \frac{\mu_{i}-\mu_{ij}}{\mu_{i}} = \frac{r_i-r_i(1-\alpha_{ij}N^*_j)}{r_i} = \alpha_{ij}N^*_j
+\end{equation}
+
+From equation \ref{eq:14}, we see that sensitivity ($S_{ij}$) measures the overall population effect of species ${j}$ on focal species $i$ but not the "\textit{per capita}" effect of species $j$. Small tweak should be implemented when using sensitivity method to estimate $\alpha$. 
+
+In addition, when Carroll \textit{et. al} 2011 used the sensitivity to predict coexistence, they defined the ND as the geometric mean of $S_{ij}$ and RDF as the geometric standard deviation of $S_{ij}$. This makes intuitive sense because when species overlap their niche more, the larger the sensitivity ($S_{ij}$) should be. In addition, since geometric mean is more sensitive to changes near near 0 than changes closer to 1, using geometric mean makes the ND more sensitive to species that are less responsive to competition (i.e. species has lower $S_{ij}$) so gives more weight to these species. However, this definition does not have direct linkage to the Lotka-Volterra model. Surprisingly, defining ND and RFD as the geometric mean and standard deviation of sensitivity ($S_{ij}$) accurately predict the species coexistence.  
+
+\newpage
+\section{Negative frequency dependency (NFD) method}
+
+This method is to investigate how the \textit{per capita} growth rate of a focal species $i$ would depend on the frequency (\%) of focal species $i$ is a community \cite{Adler2007, Levine2009, Hillerislambers2012, Godoy2014}. The logic of this negative frequency dependency (NFD) method is to use the frequency of focal species ($i$), or one minus the frequency of competing species ($j$), to proxy the impact of the competing species ($j$). Lower frequency of the focal species ($i$) means the higher frequency and thus stronger impact of the competing species is. Accordingly, the dependency of focal species $i$'s \textit{per capita} growth rate on the frequency is actually the "per \%" impact of competing species $j$ in the community on the \textit{per capita} growth rate of a focal species $i$. The NFD is therefore not a proper measure of \textit{per capita} impact of competing species on the \textit{per capita} growth rate of focal species $i$. 
+
+Mathematically, the negative frequency dependency (NFD) cannot be readily derived from the Lotka-Volterra model without making any assumptins. In the Lotka-Volterra model, there is no term describing the frequency. The only way to make the \textit{per capita} growth rate a function of the frequency of species $i$ is to assume a one-to-one conversion between focal species $i$ and the competing species $j$ and a constant community density. By doing so, the Lokta-Volterra competition model can be rewritten as followed. 
+
+\begin{equation}\label{eq:15}
+ \frac{dN_i}{dt} = r_iN_i(1 - \alpha_{ii}N_i - \alpha_{ij}(1-N_i))
+\end{equation}
+
+In equation \ref{eq:15}, $N_i$ becomes the frequency, not the density, of species $i$. To calculate the negative frequency dependency (NFD), we take derivative of equation \ref{eq:15} in terms of $N_i$. 
+
+\begin{equation}\label{eq:16}
+ NFD \equiv \frac{\partial \frac{dN_i}{dt}}{\partial N_i} = r_i(\alpha_{ij} - \alpha_{ii})
+\end{equation}
+
+\noindent From equation \ref{eq:16}, the change of \textit{per capita} growth rate of focal species$i$ with respective to species $i$'s frequency should be $r_i(\alpha_{ij} - \alpha_{ii})$ but not $\alpha_{ij}$. In addition, this is the "per \%", not the "\textit{per capita}" impact of competing species $j$ on the \textit{per capita} growth rate of focal species $i$. Accordingly, NFD is not a proper measurement of $\alpha_{ij}$. What is ever worse is that this derivation is founded on a strong assumption that the one individual increase of competing species $j$ leads to one individual decrease of the focal species $i$ and the community density is constant. 
+
+\newpage
+\section{Fitting growth curve to the population dynamics}
+
+This method is probably the most straightforward. However, the caveat is that one must have a clean time series of species in mono-culture as well as in bi-culture. The efforts to obtain such time series is not trivial. Moreover, different species might need different growth curve model specification to fit the growth curve. 
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{CompareAlphaMethods_Ref}
+\end{document}
