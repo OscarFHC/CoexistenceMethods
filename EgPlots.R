@@ -374,4 +374,129 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig3_Sen.eps",
 ##### The sensitivity method ####################################################
 #################################################################################
 
-Param_Est <- as.data.frame(fit_two$par)
+#################################################################################
+##### The NFD method ############################################################
+#################################################################################
+##### The pre-determined model ######################################
+LVmod <- function (Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    dx1 = x1*rx*(1 - a11*x1)
+    dy1 = y1*ry*(1 - a22*y1)
+    dx = x*rx*(1 - a11*x - a21*y)
+    dy = y*ry*(1 - a21*x - a22*y)
+    return(list(c(dx1, dy1, dx, dy)))
+  })
+}
+##### The pre-determined model ######################################
+##### Parameter values for the model ################################
+Pars <- c(rx = 0.1, ry = 0.05, a11 = 0.8, a12 = 0.6, a21 = 0.6, a22 = 1.5)
+State <- c(x1 = 0.1, y1 = 0.1, x = 0.1, y = 0.1)
+Time <- seq(0, 600, by = 1)
+##### Parameter values for the model ################################
+##### creating the fake data set ####################################
+out <- as.data.frame(ode(func = LVmod, y = State, parms = Pars, times = Time, hmax=0.1, maxsteps=10000))
+out %>% ggplot() + 
+  geom_point(aes(x = time, y = x1), shape = 1, col = "blue") + 
+  geom_point(aes(x = time, y = y1), shape = 1, col = "red") + 
+  geom_point(aes(x = time, y = x), shape = 19, col = "blue") + 
+  geom_point(aes(x = time, y = y), shape = 19, col = "red")
+##### creating the fake data set ####################################
+##### creating NFD for the species_i ################################
+LV_NFD_x <- function (Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    dx = x*rx*(1 - a11*x - a12*y)
+    return(list(c(dx)))
+  })
+}
+freq <- seq(from = 0.001, to = 1 - 0.001, by = 0.001)
+NFD_x_dat <- data.frame("freq" = freq,
+                        "Gr" = rep(0, length(freq)),
+                        "InGr" = rep(0, length(freq)))
+for (i in c(1:length(NFD_x_dat[,"freq"]))){
+  fre_y <- 1 - NFD_x_dat[i,"freq"]
+  fre_x <- NFD_x_dat[i,"freq"]
+  Pars <- c(rx = 0.1, a11 = 0.8, a12 = 0.6, y = fre_y)
+  State <- c(x = fre_x)
+  Time <- seq(0, 1, by = 1)
+  out <- as.data.frame(ode(func = LV_NFD_x, y = State, parms = Pars, times = Time, hmax=0.1, maxsteps=10000))
+  NFD_x_dat[i,"Gr"] <- out[2,"x"] - out[1,"x"]
+  NFD_x_dat[i,"InGr"] <- NFD_x_dat[i,"Gr"]/State
+}
+
+NFD_x_plot <- NFD_x_dat %>%
+  ggplot() + 
+  geom_line(aes(x = freq, y = InGr)) +
+  labs(x = expression("Frequency (%) of species " * italic(i)), y =  "" ) +
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.title = element_text(size = 18),
+        plot.margin = margin(t = 0, r = 0, b = 6, l = 24, "pt"),
+        legend.margin = margin(0, 0, 0, 0, "cm"),
+        legend.key = element_rect(color = "white", fill = "white"), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 14), 
+        axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 0, l = 0, "pt")),
+        axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 12, b = 0, l = 0, "pt")))
+
+##### creating NFD for the species_i ################################
+##### creating NFD for the species_j ################################
+LV_NFD_y <- function (Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    dy = y*ry*(1 - a22*y - a21*x)
+    return(list(c(dy)))
+  })
+}
+freq <- seq(from = 0.001, to = 1 - 0.001, by = 0.001)
+NFD_y_dat <- data.frame("freq" = freq,
+                        "Gr" = rep(0, length(freq)),
+                        "InGr" = rep(0, length(freq)))
+for (i in c(1:length(NFD_y_dat[,"freq"]))){
+  fre_x <- 1 - NFD_y_dat[i,"freq"]
+  fre_y <- NFD_y_dat[i,"freq"]
+  Pars <- c(ry = 0.05, a22 = 1.5, a21 = 0.6, x = fre_x)
+  State <- c(y = fre_y)
+  Time <- seq(0, 1, by = 1)
+  out <- as.data.frame(ode(func = LV_NFD_y, y = State, parms = Pars, times = Time, hmax=0.1, maxsteps=10000))
+  NFD_y_dat[i,"Gr"] <- out[2,"y"] - out[1,"y"]
+  NFD_y_dat[i,"InGr"] <- NFD_y_dat[i,"Gr"]/State
+}
+
+NFD_y_plot <- NFD_y_dat %>%
+  ggplot() + 
+  geom_line(aes(x = freq, y = InGr)) +
+  labs(x = expression("Frequency (%) of species " * italic(j)), y =  "" ) +
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.title = element_text(size = 18),
+        plot.margin = margin(t = 0, r = 6, b = 6, l = 6, "pt"),
+        legend.margin = margin(0, 0, 0, 0, "cm"),
+        legend.key = element_rect(color = "white", fill = "white"), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 14), 
+        axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 0, l = 0, "pt")),
+        axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 12, b = 0, l = 0, "pt")))
+
+##### creating NFD for the species_j ################################
+##### combine two NFD plots #########################################
+NFD_plot <- plot_grid(NFD_x_plot, NFD_y_plot, labels = c("a.", "b."), nrow = 1, align = 'h')
+
+NFD_plot <- ggdraw(NFD_plot) + 
+  #draw_label(bquote("Frequency"), x = 0.52, y = 0.02, size = 18) + 
+  draw_label(expression(italic("per capita") * "growth rate"), angle = 90, x = 0.02, y = 0.52, size = 18)
+
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig4_NFD.pdf", 
+       plot = NFD_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
+##### combine two NFD plots #########################################
+
+#################################################################################
+##### The NFD method ############################################################
+#################################################################################
+
