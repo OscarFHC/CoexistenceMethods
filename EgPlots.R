@@ -413,8 +413,9 @@ NFD_x_dat <- data.frame("freq" = freq,
                         "Gr" = rep(0, length(freq)),
                         "InGr" = rep(0, length(freq)))
 for (i in c(1:length(NFD_x_dat[,"freq"]))){
-  fre_y <- 1 - NFD_x_dat[i,"freq"]
-  fre_x <- NFD_x_dat[i,"freq"]
+  B <- 2
+  fre_y <- (1/B) * (1 - NFD_x_dat[i,"freq"])
+  fre_x <- (1/B) * (NFD_x_dat[i,"freq"])
   Pars <- c(rx = 0.1, a11 = 0.8, a12 = 0.6, y = fre_y)
   State <- c(x = fre_x)
   Time <- seq(0, 1, by = 1)
