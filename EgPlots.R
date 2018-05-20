@@ -91,7 +91,7 @@ nll <- function (par) {
 }
 
 LV_fit_two <- optim(par = c(rx = 0.1, ry = 0.08, alpha11 = 0.8, alpha12 = 0.6, alpha21 = 0.6, alpha22 = 0.9),
-                 fn = nll)
+                    fn = nll)
 ####### for bi-culture ########################################
 
 ####### use fitted parameters to plot a fitted line #################
@@ -369,7 +369,7 @@ Sen_plot <- ggdraw(Sen_plot) +
 
 ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig3_Sen.eps", 
        plot = Sen_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
-####### use fitted parameters to plot a fitted line ##################
+####### Combine two invasion growth plots ############################
 #################################################################################
 ##### The sensitivity method ####################################################
 #################################################################################
@@ -401,39 +401,43 @@ out %>% ggplot() +
   geom_point(aes(x = time, y = x), shape = 19, col = "blue") + 
   geom_point(aes(x = time, y = y), shape = 19, col = "red")
 ##### creating the fake data set ####################################
-##### creating NFD for the species_i ################################
-LV_NFD_x <- function (Time, State, Pars) {
+##### creating NFD data #############################################
+LV_NFD <- function (Time, State, Pars) {
   with(as.list(c(State, Pars)), {
     dx = x*rx*(1 - a11*x - a12*y)
-    return(list(c(dx)))
+    dy = y*ry*(1 - a21*x - a22*y)
+    return(list(c(dx, dy)))
   })
 }
-freq <- seq(from = 0.001, to = 1 - 0.001, by = 0.001)
-NFD_x_dat <- data.frame("freq" = freq,
-                        "Gr" = rep(0, length(freq)),
-                        "InGr" = rep(0, length(freq)))
-for (i in c(1:length(NFD_x_dat[,"freq"]))){
-  B <- 2
-  fre_y <- (1/B) * (1 - NFD_x_dat[i,"freq"])
-  fre_x <- (1/B) * (NFD_x_dat[i,"freq"])
-  Pars <- c(rx = 0.1, a11 = 0.8, a12 = 0.6, y = fre_y)
-  State <- c(x = fre_x)
-  Time <- seq(0, 1, by = 1)
-  out <- as.data.frame(ode(func = LV_NFD_x, y = State, parms = Pars, times = Time, hmax=0.1, maxsteps=10000))
-  NFD_x_dat[i,"Gr"] <- out[2,"x"] - out[1,"x"]
-  NFD_x_dat[i,"InGr"] <- NFD_x_dat[i,"Gr"]/State
-}
 
-NFD_x_plot <- NFD_x_dat %>%
+NFD_dat <- expand.grid(freq = seq(from = 0.001, to = 1 - 0.001, by = 0.001),
+                         B = seq(from = 0.1, to = 2, by = 0.1)) %>%
+  mutate(InGr_x = 0) %>%
+  mutate(InGr_y = 0)
+  
+for (i in c(1:nrow(NFD_x_dat))){
+  B <- NFD_x_dat$"B"[i]
+  den_x <- B * (NFD_x_dat$freq[i])
+  den_y <- B * (1 - NFD_x_dat$freq[i])
+  Pars <- c(rx = 0.1, a11 = 0.8, a12 = 0.6, ry = 0.05, a21 = 0.6, a22 = 1.5)
+  NFD_dat$InGr_x[i] <- Pars[[1]] * (1 - Pars[[2]] * den_x - Pars[[3]] * den_y)
+  NFD_dat$InGr_y[i] <- Pars[[4]] * (1 - Pars[[5]] * den_x - Pars[[6]] * den_y) 
+}
+##### creating NFD data #############################################
+##### making NFD plot ###############################################
+NFD_x_plot <- NFD_dat %>%
+  subset(B %in% c(0.1, 1, 2)) %>% 
   ggplot() + 
-  geom_line(aes(x = freq, y = InGr)) +
-  labs(x = expression("Frequency (%) of species " * italic(i)), y =  "" ) +
+  geom_line(aes(x = freq, y = InGr_x, linetype = factor(B)), size = 1) +
+  scale_linetype_manual(values = c("dotted", "dashed", "longdash"), labels = c("0.1", "1", "2"),
+                        guide_legend("Community \nbiomass (B)")) + 
+  labs(x = expression("Frequency (%) of species " * italic(i)), y = "" ) +
   theme_bw() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         plot.title = element_text(size = 18),
-        plot.margin = margin(t = 0, r = 0, b = 6, l = 24, "pt"),
+        plot.margin = margin(t = 6, r = 0, b = 6, l = 36, "pt"),
         legend.margin = margin(0, 0, 0, 0, "cm"),
         legend.key = element_rect(color = "white", fill = "white"), 
         legend.title = element_text(size = 14),
@@ -443,39 +447,19 @@ NFD_x_plot <- NFD_x_dat %>%
         axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 0, l = 0, "pt")),
         axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 12, b = 0, l = 0, "pt")))
 
-##### creating NFD for the species_i ################################
-##### creating NFD for the species_j ################################
-LV_NFD_y <- function (Time, State, Pars) {
-  with(as.list(c(State, Pars)), {
-    dy = y*ry*(1 - a22*y - a21*x)
-    return(list(c(dy)))
-  })
-}
-freq <- seq(from = 0.001, to = 1 - 0.001, by = 0.001)
-NFD_y_dat <- data.frame("freq" = freq,
-                        "Gr" = rep(0, length(freq)),
-                        "InGr" = rep(0, length(freq)))
-for (i in c(1:length(NFD_y_dat[,"freq"]))){
-  fre_x <- 1 - NFD_y_dat[i,"freq"]
-  fre_y <- NFD_y_dat[i,"freq"]
-  Pars <- c(ry = 0.05, a22 = 1.5, a21 = 0.6, x = fre_x)
-  State <- c(y = fre_y)
-  Time <- seq(0, 1, by = 1)
-  out <- as.data.frame(ode(func = LV_NFD_y, y = State, parms = Pars, times = Time, hmax=0.1, maxsteps=10000))
-  NFD_y_dat[i,"Gr"] <- out[2,"y"] - out[1,"y"]
-  NFD_y_dat[i,"InGr"] <- NFD_y_dat[i,"Gr"]/State
-}
-
-NFD_y_plot <- NFD_y_dat %>%
+NFD_y_plot <- NFD_dat %>%
+  subset(B %in% c(0.1, 1, 2)) %>% 
   ggplot() + 
-  geom_line(aes(x = freq, y = InGr)) +
-  labs(x = expression("Frequency (%) of species " * italic(j)), y =  "" ) +
+  geom_line(aes(x = 1 - freq, y = InGr_y, linetype = factor(B)), size = 1) +
+  scale_linetype_manual(values = c("dotted", "dashed", "longdash"), labels = c("0.1", "1", "2"),
+                        guide_legend("Community \nbiomass (B)")) + 
+  labs(x = expression("Frequency (%) of species " * italic(j)), y = "" ) +
   theme_bw() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         plot.title = element_text(size = 18),
-        plot.margin = margin(t = 0, r = 6, b = 6, l = 6, "pt"),
+        plot.margin = margin(t = 6, r = 6, b = 6, l = 0, "pt"),
         legend.margin = margin(0, 0, 0, 0, "cm"),
         legend.key = element_rect(color = "white", fill = "white"), 
         legend.title = element_text(size = 14),
@@ -484,14 +468,36 @@ NFD_y_plot <- NFD_y_dat %>%
         axis.text = element_text(size = 14), 
         axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 0, l = 0, "pt")),
         axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 12, b = 0, l = 0, "pt")))
+##### making NFD plot ###############################################
+####### Make 3D plot, but it is not satisfying enough thouth ########
+# install.packages("plotly")
+# library(plotly)
+# NFD_x_dat <- list(freq = seq(from = 0.001, to = 1 - 0.001, by = 0.001),
+#                   B = seq(from = 0.1, to = 100, by = 0.1),
+#                   InGr = matrix(0, length(seq(from = 0.001, to = 1 - 0.001, by = 0.001)), 
+#                                 length(seq(from = 0.1, to = 100, by = 0.1))))
+# 
+# for (i in c(1:length(NFD_x_dat$freq))){
+#   for (j in c(1:length(NFD_x_dat$B))){
+#     B <- NFD_x_dat$B[j]
+#     den_y <- B * (1 - NFD_x_dat$freq[i])
+#     den_x <- B * (NFD_x_dat$freq[i])
+#     
+#     Pars <- c(rx = 0.1, a11 = 0.8, a12 = 0.6)
+#     NFD_x_dat$InGr[i,j] <- Pars[[1]] * (1 - Pars[[2]] * den_x - Pars[[3]] * den_y)
+#   }
+# }
+# plot_ly(x = NFD_x_dat$freq, y = NFD_x_dat$B, z = NFD_x_dat$InGr) %>% add_surface()
+####### Make 3D plot, but it is not satisfying enough thouth ########
 
-##### creating NFD for the species_j ################################
 ##### combine two NFD plots #########################################
-NFD_plot <- plot_grid(NFD_x_plot, NFD_y_plot, labels = c("a.", "b."), nrow = 1, align = 'h')
-
+NFD_plot <- plot_grid(NFD_x_plot + theme(legend.position="none"), 
+                      NFD_y_plot + theme(legend.position="none"), 
+                      labels = c("a.", "b."), nrow = 1, align = 'h')
+shared_legend <- get_legend(NFD_x_plot + theme(legend.position = c(0.5, 0.58)))
+NFD_plot <- plot_grid(NFD_plot, shared_legend, nrow = 1, rel_widths = c(3, 0.3))
 NFD_plot <- ggdraw(NFD_plot) + 
-  #draw_label(bquote("Frequency"), x = 0.52, y = 0.02, size = 18) + 
-  draw_label(expression(italic("per capita") * "growth rate"), angle = 90, x = 0.02, y = 0.52, size = 18)
+  draw_label(expression(italic("per capita") * "growth rate"), angle = 90, x = 0.04, y = 0.52, size = 18)
 
 ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig4_NFD.pdf", 
        plot = NFD_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
