@@ -507,3 +507,86 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig4_NFD.pdf",
 ##### The NFD method ############################################################
 #################################################################################
 
+#################################################################################
+##### MacArthur's consumer resource model #######################################
+#################################################################################
+
+set.seed(20180521)
+Consumption_dat <- data.frame("res" = seq(from = 1, to = 10, by = 1),
+                              "cx" = rnorm(10, 10, 1), 
+                              "cy" = rnorm(10, 12, 1))
+
+MCR_plot <- ggplot() + 
+  geom_point(data = Consumption_dat, aes(x = cy, y = cx)) +
+  geom_abline(intercept = 0, slope = 1) +
+  #geom_line(data = Consumption_dat, aes(x = cy, y = predict(lm(cx ~ cy, data = Consumption_dat)))) +
+  scale_x_continuous(limits = c(8, 14), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(8, 14), expand = c(0, 0)) + 
+  labs(x = expression("Consumption of species " * italic(i) * " on resource " * italic(l)),
+       y = expression("Consumption of species " * italic(j) * " on resource " * italic(l))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.title = element_text(size = 18),
+        plot.margin = margin(t = 6, r = 0, b = 6, l = 0, "pt"),
+        legend.margin = margin(0, 0, 0, 0, "cm"),
+        legend.key = element_rect(color = "white", fill = "white"), 
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 14), 
+        axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 6, l = 0, "pt")),
+        axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 6, b = 0, l = 6, "pt")))
+MCR_plot <- ggdraw(MCR_plot) + 
+  draw_label(expression("1:1 line"), x = 0.95, y = 0.9, size = 18)
+
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig5_MCR.jpeg", 
+       plot = MCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
+#################################################################################
+##### MacArthur's consumer resource model #######################################
+#################################################################################
+
+#################################################################################
+##### Tilman's consumer resource model ##########################################
+#################################################################################
+
+TCR_dat <- data.frame("R1_v" = seq(from = 0.3, to = 2, length = 100),
+                      "R1_h" = seq(from = 0.8, to = 2, length = 100),
+                      "R2_v" = seq(from = 0.7, to = 2, length = 100),
+                      "R2_h" = seq(from = 0.5, to = 2, length = 100))
+
+TCR_plot <- TCR_dat %>%
+  ggplot() + 
+    geom_line(aes(x = 0.8, y = R1_v)) + 
+    geom_line(aes(x = R1_h, y = 0.3)) + 
+    geom_line(aes(x = 0.5, y = R2_v)) + 
+    geom_line(aes(x = R2_h, y = 0.7)) +
+    #scale_x_continuous(limits = c(0, 2), expand = c(0.5, 0.5)) +
+    #scale_y_continuous(limits = c(0, 2), expand = c(0.5, 0.5)) + 
+    labs(x = expression("Density of resource " * italic(i)),
+         y = expression("Density of resource " * italic(j))) + 
+    theme_bw() +
+    theme(panel.border = element_blank(), 
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(), 
+          plot.title = element_text(size = 18),
+          plot.margin = margin(t = 6, r = 0, b = 6, l = 0, "pt"),
+          legend.margin = margin(0, 0, 0, 0, "cm"),
+          legend.key = element_rect(color = "white", fill = "white"), 
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 14),
+          axis.line = element_line(colour = "black"), 
+          axis.text = element_text(size = 14), 
+          axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 6, l = 0, "pt")),
+          axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 6, b = 0, l = 6, "pt")))
+
+TCR_plot <- ggdraw(TCR_plot) + 
+  draw_label(expression("Zero growth isocline of Species " * italic(i)), x = 0.85, y = 0.15, size = 12) + 
+  draw_label(expression("Zero growth isocline of Species " * italic(j)), x = 0.85, y = 0.34, size = 12)
+
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig6_TCR.eps", 
+       plot = TCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
+#################################################################################
+##### Tilman's consumer resource model ##########################################
+#################################################################################
