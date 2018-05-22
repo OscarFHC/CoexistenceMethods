@@ -550,20 +550,25 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig5_MCR.jpeg",
 #################################################################################
 ##### Tilman's consumer resource model ##########################################
 #################################################################################
-
+Rx <- function(x){y <- (0.3/0.6) * x - (0.3/0.6) * 0.6 + 0.7; y}
+Ry <- function(y){x <- (0.2/0.7) * y - (0.2/0.7) * 0.7 + 0.6; x}
 TCR_dat <- data.frame("R1_v" = seq(from = 0.3, to = 2, length = 100),
-                      "R1_h" = seq(from = 0.8, to = 2, length = 100),
+                      "R1_h" = seq(from = 0.6, to = 2, length = 100),
                       "R2_v" = seq(from = 0.7, to = 2, length = 100),
-                      "R2_h" = seq(from = 0.5, to = 2, length = 100))
+                      "R2_h" = seq(from = 0.2, to = 2, length = 100),
+                      "C1" = Rx(seq(from = 0.6, to = 2, length = 100)),
+                      "C2" = Ry(seq(from = 0.7, to = 2, length = 100)))
 
 TCR_plot <- TCR_dat %>%
   ggplot() + 
-    geom_line(aes(x = 0.8, y = R1_v)) + 
+    geom_line(aes(x = 0.6, y = R1_v)) + 
     geom_line(aes(x = R1_h, y = 0.3)) + 
-    geom_line(aes(x = 0.5, y = R2_v)) + 
+    geom_line(aes(x = 0.2, y = R2_v)) + 
     geom_line(aes(x = R2_h, y = 0.7)) +
-    #scale_x_continuous(limits = c(0, 2), expand = c(0.5, 0.5)) +
-    #scale_y_continuous(limits = c(0, 2), expand = c(0.5, 0.5)) + 
+    geom_line(aes(x = seq(from = 0.6, to = 2, length = 100), y = C1), linetype = "dashed") + 
+    geom_line(aes(x = C2, y = seq(from = 0.7, to = 2, length = 100)), linetype = "dashed") + 
+    scale_x_continuous(limits = c(0, 2.3), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 2.3), expand = c(0, 0)) + 
     labs(x = expression("Density of resource " * italic(i)),
          y = expression("Density of resource " * italic(j))) + 
     theme_bw() +
@@ -582,10 +587,11 @@ TCR_plot <- TCR_dat %>%
           axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 6, b = 0, l = 6, "pt")))
 
 TCR_plot <- ggdraw(TCR_plot) + 
-  draw_label(expression("Zero growth isocline of Species " * italic(i)), x = 0.85, y = 0.15, size = 12) + 
-  draw_label(expression("Zero growth isocline of Species " * italic(j)), x = 0.85, y = 0.34, size = 12)
+  draw_label(expression("Coexistence region"), x = 0.5, y = 0.6, size = 18) +
+  draw_label(expression("Zero growth isocline of Species " * italic(i)), x = 0.85, y = 0.22, size = 12) + 
+  draw_label(expression("Zero growth isocline of Species " * italic(j)), x = 0.85, y = 0.38, size = 12)
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig6_TCR.eps", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig6_TCR.pdf", 
        plot = TCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### Tilman's consumer resource model ##########################################
