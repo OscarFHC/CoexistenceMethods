@@ -4,6 +4,9 @@ library(deSolve)
 library(ggplot2)
 library(cowplot)
 library(tidyverse)
+# if(!require(devtools)) install.packages("devtools")
+# devtools::install_github("kassambara/ggpubr")
+library(ggpubr)
 
 ###################################################################################################################
 ##### This section is to estimate parameter values for LV model from empirical data ###############################
@@ -341,38 +344,62 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig3_FD.tiff",
 #################################################################################
 ##### MacArthur's consumer resource model #######################################
 #################################################################################
-
 set.seed(20180521)
-Consumption_dat <- data.frame("res" = seq(from = 1, to = 10, by = 1),
-                              "cx" = rnorm(10, 10, 1), 
-                              "cy" = rnorm(10, 12, 1))
+Cons <- data.frame("cx" = rnorm(10, 10, 1),
+                   "cy" = rnorm(10, 12, 1))
+Cons_dat <- data.frame("res" = seq(from = 0, to = 20, by = 1),
+                       "con" = seq(from = 0, to = 20, by = 1)/4)
+box = data.frame(xmin = c(Cons$cy[10] - 0.15, 8.45), xmax = c(Cons$cy[10] + 0.15, 10.75),
+                 ymin = c(Cons$cx[10] - 0.15, 11.65), ymax = c(Cons$cx[10] + 0.15, 13.9))
 
-MCR_plot <- ggplot() + 
-  geom_point(data = Consumption_dat, aes(x = cy, y = cx)) +
-  geom_abline(intercept = 0, slope = 1) +
-  #geom_line(data = Consumption_dat, aes(x = cy, y = predict(lm(cx ~ cy, data = Consumption_dat)))) +
+MCR_out <- ggplot() + 
+  geom_point(data = Cons, aes(x = cy, y = cx), size = 3) +
+  geom_abline(intercept = 0, slope = 1, size = 1.5) +
+  geom_rect(data = box, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),  
+            colour = "black", fill = "white", alpha = 0, size = 2) +
+  geom_segment(aes(x = box$xmin[1], y = box$ymin[1], xend = box$xmin[2], yend = box$ymin[2]), color = "black", size = 2) +
+  geom_segment(aes(x = box$xmax[1], y = box$ymax[1], xend = box$xmax[2], yend = box$ymax[2]), color = "black", size = 2) + 
   scale_x_continuous(limits = c(8, 14), expand = c(0, 0)) +
   scale_y_continuous(limits = c(8, 14), expand = c(0, 0)) + 
-  labs(x = expression("Consumption of species " * italic(i) * " on resource " * italic(l)),
-       y = expression("Consumption of species " * italic(j) * " on resource " * italic(l))) + 
+  labs(x = expression("Consumption of species " * italic(i) * " on resource " * italic(l) * "(" * italic(C[il]) * ")"),
+       y = expression("Consumption of species " * italic(j) * " on resource " * italic(l) * "(" * italic(C[jl]) * ")")) + 
   theme_bw() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         plot.title = element_text(size = 18),
         plot.margin = margin(t = 6, r = 0, b = 6, l = 0, "pt"),
-        legend.margin = margin(0, 0, 0, 0, "cm"),
-        legend.key = element_rect(color = "white", fill = "white"), 
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 14),
         axis.line = element_line(colour = "black"), 
         axis.text = element_text(size = 14), 
-        axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 6, l = 0, "pt")),
-        axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 6, b = 0, l = 6, "pt")))
-MCR_plot <- ggdraw(MCR_plot) + 
-  draw_label(expression("1:1 line"), x = 0.95, y = 0.9, size = 18)
+        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 12, r = 0, b = 6, l = 0, "pt")),
+        axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 6, b = 0, l = 6, "pt")))
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig5_MCR.jpeg", 
+MCR_in <- ggplot() + 
+  geom_line(data = Cons_dat, aes(x = res, y = con), size = 2) + 
+  scale_x_continuous(limits = c(0, 21), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 6), expand = c(0, 0)) + 
+  labs(x = expression("Density of resource " * italic(l)),
+       y = expression(atop("Resource " * italic(l) * " eaten ", "per species " * italic(i) * "per time"))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.title = element_text(size = 18),
+        plot.margin = margin(t = 6, r = 6, b = 6, l = 6, "pt"),
+        aspect.ratio = 0.6,
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 14), 
+        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")),
+        axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
+
+
+
+MCR_plot <- ggdraw(MCR_out) +
+  draw_label(expression("1:1 line"), x = 0.95, y = 0.9, size = 18) + 
+  draw_plot(MCR_in, x = 0.05, y = 0.65, width = 0.5, height = 0.3)
+  
+
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig4_MCR.pdf", 
        plot = MCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### MacArthur's consumer resource model #######################################
