@@ -368,7 +368,7 @@ MCR_out <- ggplot() +
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
         plot.title = element_text(size = 18),
-        plot.margin = margin(t = 6, r = 0, b = 6, l = 0, "pt"),
+        plot.margin = margin(t = 12, r = 12, b = 6, l = 0, "pt"),
         axis.line = element_line(colour = "black"), 
         axis.text = element_text(size = 14), 
         axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 12, r = 0, b = 6, l = 0, "pt")),
@@ -392,14 +392,11 @@ MCR_in <- ggplot() +
         axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")),
         axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
 
-
-
 MCR_plot <- ggdraw(MCR_out) +
   draw_label(expression("1:1 line"), x = 0.95, y = 0.9, size = 18) + 
   draw_plot(MCR_in, x = 0.05, y = 0.65, width = 0.5, height = 0.3)
   
-
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig4_MCR.pdf", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig4_MCR.tiff", 
        plot = MCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### MacArthur's consumer resource model #######################################
@@ -408,41 +405,37 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig4_MCR.pdf",
 #################################################################################
 ##### Tilman's consumer resource model ##########################################
 #################################################################################
-Rx <- function(x){y <- (0.3/0.6) * x - (0.3/0.6) * 0.6 + 0.7; y}
-Ry <- function(y){x <- (0.2/0.7) * y - (0.2/0.7) * 0.7 + 0.6; x}
-TCR_dat <- data.frame("R1_v" = seq(from = 0.3, to = 2, length = 100),
-                      "R1_h" = seq(from = 0.6, to = 2, length = 100),
-                      "R2_v" = seq(from = 0.7, to = 2, length = 100),
-                      "R2_h" = seq(from = 0.2, to = 2, length = 100),
-                      "C1" = Rx(seq(from = 0.6, to = 2, length = 100)),
-                      "C2" = Ry(seq(from = 0.7, to = 2, length = 100)))
+rxR1_f <- function(R1){(rx * R1)/(R1 + Kx1) - D}
+rxR2_f <- function(R2){(rx * R2)/(R2 + Kx2) - D}
+ryR1_f <- function(R1){(ry * R1)/(R1 + Ky1) - D}
+ryR2_f <- function(R2){(ry * R2)/(R2 + Ky2) - D}
 
-TCR_plot <- TCR_dat %>%
-  ggplot() + 
-    geom_line(aes(x = 0.6, y = R1_v)) + 
-    geom_line(aes(x = R1_h, y = 0.3)) + 
-    geom_line(aes(x = 0.2, y = R2_v)) + 
-    geom_line(aes(x = R2_h, y = 0.7)) +
-    geom_line(aes(x = seq(from = 0.6, to = 2, length = 100), y = C1), linetype = "dashed") + 
-    geom_line(aes(x = C2, y = seq(from = 0.7, to = 2, length = 100)), linetype = "dashed") + 
-    scale_x_continuous(limits = c(0, 2.3), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0, 2.3), expand = c(0, 0)) + 
-    labs(x = expression("Density of resource " * italic(i)),
-         y = expression("Density of resource " * italic(j))) + 
-    theme_bw() +
-    theme(panel.border = element_blank(), 
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(), 
-          plot.title = element_text(size = 18),
-          plot.margin = margin(t = 6, r = 0, b = 6, l = 0, "pt"),
-          legend.margin = margin(0, 0, 0, 0, "cm"),
-          legend.key = element_rect(color = "white", fill = "white"), 
-          legend.title = element_text(size = 14),
-          legend.text = element_text(size = 14),
-          axis.line = element_line(colour = "black"), 
-          axis.text = element_text(size = 14), 
-          axis.title.x = element_text(size = 18, margin = margin(t = 12, r = 0, b = 6, l = 0, "pt")),
-          axis.title.y = element_text(size = 18, margin = margin(t = 0, r = 6, b = 0, l = 6, "pt")))
+rx <- 1.2
+ry <- 1
+Kx1 <- 16
+Kx2 <- 20
+Ky1 <- 18
+Ky2 <- 12
+D <- 0.2
+
+r_dat <- data.frame("R1" = seq(from  = 0, to = 100, length = 100),
+                    "R2" = seq(from  = 0, to = 100, length = 100)) %>%
+  mutate(rxR1 = rxR1_f(R1),
+         rxR2 = rxR2_f(R2),
+         ryR1 = ryR1_f(R1),
+         ryR2 = ryR2_f(R2))
+
+rxR1_p <- r_dat %>% ggplot() +
+  geom_line(aes(x = R1, y = rxR1))
+
+rxR2_p <- r_dat %>% ggplot() +
+  geom_line(aes(x = R2, y = rxR2))
+
+ryR1_p <- r_dat %>% ggplot() +
+  geom_line(aes(x = R1, y = ryR1))
+
+ryR2_p <- r_dat %>% ggplot() +
+  geom_line(aes(x = R2, y = ryR2))
 
 TCR_plot <- ggdraw(TCR_plot) + 
   draw_label(expression("Coexistence region"), x = 0.5, y = 0.6, size = 18) +
