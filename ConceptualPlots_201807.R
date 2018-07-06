@@ -125,8 +125,8 @@ X1 <- ggplot() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 0, 0, 42), "pt"),
-        plot.title = element_text(size = 14, hjust = 0.5, vjust = 0.2),
+        plot.margin = unit(c(0, 0, 0, 52), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.2),
         axis.line = element_line(colour = "black"), 
         axis.ticks = element_blank(),
         axis.text = element_blank())
@@ -142,8 +142,8 @@ Y1 <- ggplot() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 8, 0, 42), "pt"),
-        plot.title = element_text(size = 14, hjust = 0.5, vjust = 0.2),
+        plot.margin = unit(c(0, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.2),
         axis.line = element_line(colour = "black"), 
         axis.ticks = element_blank(),
         axis.text = element_blank())
@@ -160,20 +160,19 @@ Bi <- ggplot() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 8, 0, 42), "pt"),
-        plot.title = element_text(size = 14, hjust = 0.5, vjust = 0.3),
+        plot.margin = unit(c(0, 12, 0, 52), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
         axis.line = element_line(colour = "black"), 
         axis.ticks = element_blank(),
         axis.text = element_blank(), 
-        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 4, r = 0, b = 12, l = 24)))
+        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)))
 
-plot_up <- plot_grid(X1, Y1, labels = c("A.", "B."), ncol = 2, align = 'h')
+plot_up <- plot_grid(X1, Y1, labels = c("A.", "B."), ncol = 2)
 Plot_Bi1 <- plot_grid(plot_up, Bi, labels = c("", "C."), ncol = 1) %>%
   ggdraw() + 
-  draw_label(expression(paste("Population density")), 
-             angle = 90, x = 0.04, y = 0.5, size = 18)
+  draw_label(expression(paste("Population density")), angle = 90, x = 0.04, y = 0.5, size = 24)
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig1_LV.tiff", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig1_LV.pdf", 
        plot = Plot_Bi1, width = 35, height = 24, units = c("cm"), dpi = 600)
 
 ##### use fitted parameters to plot a fitted line ###################
@@ -207,8 +206,8 @@ Growth_Sen <- as.data.frame(ode(func = LVmod_sen, y = State, parms = Pars, times
 x_to_y <- ggplot() + 
   geom_line(data = Growth_Sen[1:250,], aes(x = time, y = y1), color = "#FF6600", size = 2) +
   geom_line(data = Growth_Sen[1:100,], aes(x = time + 150, y = x), color = "#000099", size = 2) +
-  geom_segment(aes(x = 10, y = 0.05, xend = 25, yend = 0.3), color = "black", size = 2, arrow = arrow()) + 
-  geom_segment(aes(x = 160, y = 0.05, xend = 175, yend = 0.3), color = "black", size = 2, arrow = arrow()) + 
+  geom_segment(aes(x = 10, y = 0.05, xend = 25, yend = 0.35), color = "black", size = 2, arrow = arrow()) + 
+  geom_segment(aes(x = 160, y = 0.05, xend = 175, yend = 0.35), color = "black", size = 2, arrow = arrow()) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 1.3)) + 
   scale_x_continuous(expand = c(0, 0), limits = c(0, 250)) + 
   labs(title = expression(paste("Species ", italic(i), " invading species ", italic(j))), 
@@ -218,8 +217,8 @@ x_to_y <- ggplot() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 0, 0, 42), "pt"),
-        plot.title = element_text(size = 14, hjust = 0.5, vjust = 0.4),
+        plot.margin = unit(c(0, 12, 0, 52), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.2),
         axis.line = element_line(colour = "black"), 
         axis.ticks = element_blank(),
         axis.text = element_blank())
@@ -227,8 +226,8 @@ x_to_y <- ggplot() +
 y_to_x <- ggplot() + 
   geom_line(data = Growth_Sen[1:250,], aes(x = time, y = x1), color = "#000099", size = 2) +
   geom_line(data = Growth_Sen[1:100,], aes(x = time + 150, y = y), color = "#FF6600", size = 2) +
-  geom_segment(aes(x = 10, y = 0.05, xend = 25, yend = 0.3), color = "black", size = 2, arrow = arrow()) + 
-  geom_segment(aes(x = 160, y = 0.05, xend = 175, yend = 0.3), color = "black", size = 2, arrow = arrow()) +
+  geom_segment(aes(x = 10, y = 0.05, xend = 25, yend = 0.75), color = "black", size = 2, arrow = arrow()) + 
+  geom_segment(aes(x = 160, y = 0.05, xend = 175, yend = 0.35), color = "black", size = 2, arrow = arrow()) +
   scale_y_continuous(expand = c(0, 0), limits = c(0, 1.3)) + 
   scale_x_continuous(expand = c(0, 0), limits = c(0, 250)) + 
   labs(title = expression(paste("Species ", italic(j), " invading species ", italic(i))), 
@@ -238,26 +237,26 @@ y_to_x <- ggplot() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 8, 0, 42), "pt"),
-        plot.title = element_text(size = 14, hjust = 0.5),
+        plot.margin = unit(c(0, 12, 0, 52), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
         axis.line = element_line(colour = "black"), 
         axis.ticks = element_blank(),
         axis.text = element_blank(),
-        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 4, r = 0, b = 12, l = 24)))
+        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)))
 ##### use fitted parameters to plot a fitted line ####################
 ####### Combine two invasion growth plots ############################
 uy <- expression(atop("Growth rate of species", paste(italic(j), " growing alone (", mu[j], ")")))
 uxy <- expression(atop("Growth rate of species", paste(italic(i), " invading species (", mu[j], ")")))
 ux <- expression(atop("Growth rate of species", paste(italic(i), " growing alone (", mu[i], ")")))
 uyx <- expression(atop("Growth rate of species", paste(italic(j), " invading species (", mu[i], ")")))
-Sen_plot <- plot_grid(x_to_y , y_to_x, labels = c("A.", "B."), ncol = 1, align = 'v') %>% 
+Sen_plot <- plot_grid(x_to_y , y_to_x, labels = c("A.", "B."), ncol = 1) %>% 
   ggdraw() + 
-    draw_label(bquote("Population density"), angle = 90, x = 0.04, y = 0.52, size = 18) + 
-    draw_label(uy, x = 0.135, y = 0.66, size = 14) +
-    draw_label(uxy, x = 0.7, y = 0.66, size = 14) +
-    draw_label(ux, x = 0.135, y = 0.18, size = 14) +
-    draw_label(uyx, x = 0.7, y = 0.18, size = 14)
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig2_Sen.pdf", 
+    draw_label(bquote("Population density"), angle = 90, x = 0.04, y = 0.5, size = 24) + 
+    draw_label(uy, x = 0.175, y = 0.69, size = 20) +
+    draw_label(uxy, x = 0.7, y = 0.69, size = 20) +
+    draw_label(ux, x = 0.175, y = 0.35, size = 20) +
+    draw_label(uyx, x = 0.7, y = 0.225, size = 20)
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig2_Sen.pdf", 
        plot = Sen_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 ####### Combine two invasion growth plots ############################
 #################################################################################
@@ -283,6 +282,27 @@ for (i in c(1:nrow(FD_dat))){
 }
 ##### creating NFD data #############################################
 ##### making NFD plot ###############################################
+FD_x_plot1 <- FD_dat %>% # This plot is just for the legend
+  subset(B %in% c(0.1, 1, 2)) %>% 
+  ggplot() + 
+  geom_line(aes(x = freq, y = InGr_x, linetype = factor(B)), size = 1) + 
+  geom_segment(aes(x = 0.4, y = -0.036, xend = 0.6, yend = -0.036), color = "red", size = 2) + 
+  geom_segment(aes(x = 0.6, y = -0.036, xend = 0.6, yend = -0.044), color = "red", size = 2) +
+  scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "1", "2"),
+                        guide_legend("Community \nbiomass (B)")) + 
+  labs(x = expression("Frequency (%) of species " * italic(i)), 
+       y = expression(paste(italic("per capita"), "growth rate of species ", italic(i)))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.margin = unit(c(0, 12, 0, 52), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.2),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 20),
+        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
+
 FD_x_plot <- FD_dat %>%
   subset(B %in% c(0.1, 1, 2)) %>% 
   ggplot() + 
@@ -297,17 +317,19 @@ FD_x_plot <- FD_dat %>%
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 0, 0, 24), "pt"),
-        plot.title = element_text(size = 14, hjust = 0.5, vjust = 0.4),
+        plot.margin = unit(c(0, 12, 0, 48), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.2),
         axis.line = element_line(colour = "black"), 
-        axis.text = element_text(size = 14),
-        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 24)),
-        axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
+        axis.text = element_text(size = 20),
+        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
 
 FD_y_plot <- FD_dat %>%
   subset(B %in% c(0.1, 1, 2)) %>% 
   ggplot() + 
   geom_line(aes(x = 1 - freq, y = InGr_y, linetype = factor(B)), size = 1, color = "#FF6600") + 
+  geom_segment(aes(x = 0.4, y = -0.0544, xend = 0.6, yend = -0.0544), color = "red", size = 2) + 
+  geom_segment(aes(x = 0.6, y = -0.0736, xend = 0.6, yend = -0.0544), color = "red", size = 2) +
   scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "1", "2"),
                         guide_legend("Community \nbiomass (B)")) + 
   labs(x = expression("Frequency (%) of species " * italic(j)), 
@@ -316,26 +338,27 @@ FD_y_plot <- FD_dat %>%
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 0, 0, 12), "pt"),
-        plot.title = element_text(size = 14, hjust = 0.5, vjust = 0.4),
+        plot.margin = unit(c(0, 12, 0, 36), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.4),
         axis.line = element_line(colour = "black"), 
-        axis.text = element_text(size = 14),
-        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 24)),
-        axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
+        axis.text = element_text(size = 20),
+        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
 
 ##### making NFD plot ###############################################
 ##### combine two NFD plots #########################################
 FD_plot <- plot_grid(FD_x_plot + theme(legend.position="none"), 
                      FD_y_plot + theme(legend.position="none"), 
                      labels = c("A.", "B."), nrow = 1, align = 'h')
-shared_legend <- get_legend(FD_x_plot + theme(legend.position = c(0.5, 0.58), 
-                                              legend.title = element_text(size = 14),
-                                              legend.text = element_text(size = 14)))
-FD_plot <- plot_grid(FD_plot, shared_legend, nrow = 1, rel_widths = c(3, 0.3)) %>%
+shared_legend <- get_legend(FD_x_plot1 + theme(legend.position = c(0.5, 0.58), 
+                                               legend.title = element_text(size = 20),
+                                               legend.text = element_text(size = 20)))
+FD_plot <- plot_grid(FD_plot, shared_legend, nrow = 1, rel_widths = c(3, 0.4)) %>%
   ggdraw() + 
-  draw_label(expression("Slope = FD " != alpha), x = 0.35, y = 0.28, size = 18, colour = "red")
+  draw_label(expression("Slope = FD " != alpha), x = 0.345, y = 0.295, size = 20, colour = "red") + 
+  draw_label(expression("Slope = FD " != alpha), x = 0.78, y = 0.42, size = 20, colour = "red")
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig3_FD.pdf", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig3_FD.pdf", 
        plot = FD_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 ##### combine two NFD plots #########################################
 
@@ -351,8 +374,8 @@ Cons <- data.frame("cx" = rnorm(10, 10, 1),
                    "cy" = rnorm(10, 12, 1))
 Cons_dat <- data.frame("res" = seq(from = 0, to = 20, by = 1),
                        "con" = seq(from = 0, to = 20, by = 1)/4)
-box = data.frame(xmin = c(Cons$cy[10] - 0.15, 8.45), xmax = c(Cons$cy[10] + 0.15, 10.75),
-                 ymin = c(Cons$cx[10] - 0.15, 11.65), ymax = c(Cons$cx[10] + 0.15, 13.9))
+box = data.frame(xmin = c(Cons$cy[10] - 0.15, 8.22), xmax = c(Cons$cy[10] + 0.15, 10.45),
+                 ymin = c(Cons$cx[10] - 0.15, 11.51), ymax = c(Cons$cx[10] + 0.15, 13.9))
 
 MCR_out <- ggplot() + 
   geom_point(data = Cons, aes(x = cy, y = cx), size = 3) +
@@ -369,12 +392,12 @@ MCR_out <- ggplot() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.title = element_text(size = 18),
-        plot.margin = margin(t = 12, r = 12, b = 6, l = 0, "pt"),
+        plot.title = element_text(size = 20),
+        plot.margin = margin(t = 12, r = 24, b = 12, l = 12, "pt"),
         axis.line = element_line(colour = "black"), 
-        axis.text = element_text(size = 14), 
-        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 12, r = 0, b = 6, l = 0, "pt")),
-        axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 6, b = 0, l = 6, "pt")))
+        axis.text = element_text(size = 20), 
+        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0, "pt")),
+        axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 12, b = 0, l = 12, "pt")))
 
 MCR_in <- ggplot() + 
   geom_line(data = Cons_dat, aes(x = res, y = con), size = 2) + 
@@ -385,20 +408,19 @@ MCR_in <- ggplot() +
   theme_bw() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(), 
-        plot.title = element_text(size = 18),
-        plot.margin = margin(t = 6, r = 6, b = 6, l = 6, "pt"),
+        panel.grid.minor = element_blank(),
+        plot.margin = margin(t = 12, r = 12, b = 12, l = 12, "pt"),
         aspect.ratio = 0.6,
         axis.line = element_line(colour = "black"), 
         axis.text = element_text(size = 14), 
-        axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")),
-        axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
+        axis.title.x = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 0, l = 0, "pt")),
+        axis.title.y = element_text(size = 20, face = "bold", margin = margin(t = 0, r = 12, b = 0, l = 0, "pt")))
 
 MCR_plot <- ggdraw(MCR_out) +
-  draw_label(expression("1:1 line"), x = 0.95, y = 0.9, size = 18) + 
-  draw_plot(MCR_in, x = 0.05, y = 0.65, width = 0.5, height = 0.3)
+  draw_label(expression("1:1 line"), x = 0.95, y = 0.9, size = 20) + 
+  draw_plot(MCR_in, x = 0.04, y = 0.629, width = 0.5, height = 0.3)
   
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig4_MCR.tiff", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig4_MCR.tiff", 
        plot = MCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### MacArthur's consumer resource model #######################################
@@ -434,8 +456,8 @@ rxR1_p <- r_dat %>%
     geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
     geom_segment(x = -30, y = 0.4, xend = 12, yend = 0.4, size = 1.5, linetype = "dashed") + 
     geom_segment(x = 12, y = 0.4, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 14) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.52, size = 14) +
+    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.54, size = 20) +
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
     scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
     labs(x = expression("Density of resource " * italic(i)),
@@ -445,13 +467,12 @@ rxR1_p <- r_dat %>%
           panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(), 
           plot.title = element_text(size = 18),
-          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          plot.margin = margin(t = 6, r = 12, b = 0, l = 52, "pt"),
           aspect.ratio = 0.6,
           axis.line = element_line(colour = "black"), 
           axis.text = element_blank(), 
           axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
-          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
+          axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")))
 
 rxR2_p <- r_dat %>% 
   subset(rxR2>0) %>%
@@ -460,8 +481,8 @@ rxR2_p <- r_dat %>%
     geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
     geom_segment(x = -30, y = 0.4, xend = 25, yend = 0.4, size = 1.5, linetype = "dashed") + 
     geom_segment(x = 25, y = 0.4, xend = 25, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 14) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.52, size = 14) +
+    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.54, size = 20) +
     
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
     scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
@@ -472,13 +493,12 @@ rxR2_p <- r_dat %>%
           panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(), 
           plot.title = element_text(size = 18),
-          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          plot.margin = margin(t = 6, r = 12, b = 0, l = 52, "pt"),
           aspect.ratio = 0.6,
           axis.line = element_line(colour = "black"), 
           axis.text = element_blank(), 
           axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
-          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
+          axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")))
 
 ryR1_p <- r_dat %>% 
   subset(ryR1>0) %>%
@@ -487,8 +507,8 @@ ryR1_p <- r_dat %>%
     geom_abline(intercept = 0.8, slope = 0, size = 1.5, linetype = "dashed") +
     geom_segment(x = -30, y = 0.3, xend = 20, yend = 0.3, size = 1.5, linetype = "dashed") + 
     geom_segment(x = 20, y = 0.3, xend = 20, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 14) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.42, size = 14) +
+    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.44, size = 20) +
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
     scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
     labs(x = expression("Density of resource " * italic(i)),
@@ -498,13 +518,12 @@ ryR1_p <- r_dat %>%
           panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(), 
           plot.title = element_text(size = 18),
-          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          plot.margin = margin(t = 6, r = 12, b = 0, l = 52, "pt"),
           aspect.ratio = 0.6,
           axis.line = element_line(colour = "black"), 
           axis.text = element_blank(), 
           axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
-          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
+          axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")))
 
 ryR2_p <- r_dat %>% 
   subset(ryR2>0) %>%
@@ -513,8 +532,8 @@ ryR2_p <- r_dat %>%
     geom_abline(intercept = 0.8, slope = 0, size = 1.5, linetype = "dashed") +
     geom_segment(x = -30, y = 0.3, xend = 12, yend = 0.3, size = 1.5, linetype = "dashed") + 
     geom_segment(x = 12, y = 0.3, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 14) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.42, size = 14) +
+    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.44, size = 20) +
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
     scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
     labs(x = expression("Density of resource " * italic(j)),
@@ -524,30 +543,27 @@ ryR2_p <- r_dat %>%
           panel.grid.major = element_blank(), 
           panel.grid.minor = element_blank(), 
           plot.title = element_text(size = 18),
-          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          plot.margin = margin(t = 6, r = 12, b = 0, l = 52, "pt"),
           aspect.ratio = 0.6,
           axis.line = element_line(colour = "black"), 
           axis.text = element_blank(), 
           axis.ticks = element_blank(),
-          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
-          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
-  
-#breaks = c(3.2, 16), labels = c(expression(italic(R[ii]^"*")), )
-#
+          axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")))
+
 TCR_plot <- plot_grid(rxR1_p, ryR1_p, rxR2_p, ryR2_p, labels=c("A.", "B.", "C.", "D."), ncol = 2) %>%
   ggdraw() + 
-    draw_label(expression(italic("per capita") * " growth rate of species " * italic(i)), angle = 90,  x = 0.04, y = 0.5, size = 18) + 
-    draw_label(expression(italic("per capita") * " growth rate of species " * italic(j)), angle = 90,  x = 0.54, y = 0.5, size = 18) + 
-    draw_label(expression(italic(R[ii]^"*")), x = 0.171, y = 0.59, size = 14) +  
-    draw_label(expression(italic(R[ji]^"*")), x = 0.679, y = 0.59, size = 14) + 
-    draw_label(expression(italic(R[ij]^"*")), x = 0.179, y = 0.09, size = 14) + 
-    draw_label(expression(italic(R[jj]^"*")), x = 0.672, y = 0.09, size = 14) + 
-    draw_label(expression(italic(K[ii])), x = 0.204, y = 0.589, size = 14) +  
-    draw_label(expression(italic(K[ji])), x = 0.731, y = 0.589, size = 14) + 
-    draw_label(expression(italic(K[ij])), x = 0.247, y = 0.089, size = 14) + 
-    draw_label(expression(italic(K[jj])), x = 0.705, y = 0.089, size = 14)
+    draw_label(expression(italic("per capita") * " growth rate of species " * italic(i)), angle = 90,  x = 0.04, y = 0.5, size = 24) + 
+    draw_label(expression(italic("per capita") * " growth rate of species " * italic(j)), angle = 90,  x = 0.54, y = 0.5, size = 24) + 
+    draw_label(expression(italic(R[ii]^"*")), x = 0.171, y = 0.58, size = 20) +  
+    draw_label(expression(italic(R[ji]^"*")), x = 0.679, y = 0.58, size = 20) + 
+    draw_label(expression(italic(R[ij]^"*")), x = 0.179, y = 0.08, size = 20) + 
+    draw_label(expression(italic(R[jj]^"*")), x = 0.672, y = 0.08, size = 20) + 
+    draw_label(expression(italic(K[ii])), x = 0.204, y = 0.579, size = 20) +  
+    draw_label(expression(italic(K[ji])), x = 0.731, y = 0.579, size = 20) + 
+    draw_label(expression(italic(K[ij])), x = 0.247, y = 0.079, size = 20) + 
+    draw_label(expression(italic(K[jj])), x = 0.705, y = 0.079, size = 20)
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig5_TCR.pdf", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig5_TCR.pdf", 
        plot = TCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### Tilman's consumer resource model ##########################################
