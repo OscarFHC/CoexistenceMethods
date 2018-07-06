@@ -275,9 +275,9 @@ FD_dat <- expand.grid(freq = seq(from = 0.001, to = 1 - 0.001, by = 0.001),
 Pars <- c(rx = 0.1, ry = 0.08, a11 = 0.8, a12 = 0.6, a21 = 0.6, a22 = 1.2)  
 
 for (i in c(1:nrow(FD_dat))){
-  B <- NFD_dat$"B"[i]
-  den_x <- B * (NFD_dat$freq[i])
-  den_y <- B * (1 - NFD_dat$freq[i])
+  B <- FD_dat$"B"[i]
+  den_x <- B * (FD_dat$freq[i])
+  den_y <- B * (1 - FD_dat$freq[i])
   FD_dat$InGr_x[i] <- Pars[[1]] * (1 - Pars[[3]] * den_x - Pars[[4]] * den_y)
   FD_dat$InGr_y[i] <- Pars[[2]] * (1 - Pars[[5]] * den_x - Pars[[6]] * den_y) 
 }
@@ -286,7 +286,9 @@ for (i in c(1:nrow(FD_dat))){
 FD_x_plot <- FD_dat %>%
   subset(B %in% c(0.1, 1, 2)) %>% 
   ggplot() + 
-  geom_line(aes(x = freq, y = InGr_x, linetype = factor(B)), size = 1) + 
+  geom_line(aes(x = freq, y = InGr_x, linetype = factor(B)), size = 1, color = "#000099") + 
+  geom_segment(aes(x = 0.4, y = -0.036, xend = 0.6, yend = -0.036), color = "red", size = 2) + 
+  geom_segment(aes(x = 0.6, y = -0.036, xend = 0.6, yend = -0.044), color = "red", size = 2) +
   scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "1", "2"),
                         guide_legend("Community \nbiomass (B)")) + 
   labs(x = expression("Frequency (%) of species " * italic(i)), 
@@ -305,9 +307,7 @@ FD_x_plot <- FD_dat %>%
 FD_y_plot <- FD_dat %>%
   subset(B %in% c(0.1, 1, 2)) %>% 
   ggplot() + 
-  geom_line(aes(x = 1 - freq, y = InGr_y, linetype = factor(B)), size = 1) +
-  geom_segment(aes(x = 0.4, y = -0.0544, xend = 0.6, yend = -0.0544), color = "red", size = 2) + 
-  geom_segment(aes(x = 0.6, y = -0.0544, xend = 0.6, yend = -0.0736), color = "red", size = 2) + 
+  geom_line(aes(x = 1 - freq, y = InGr_y, linetype = factor(B)), size = 1, color = "#FF6600") + 
   scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "1", "2"),
                         guide_legend("Community \nbiomass (B)")) + 
   labs(x = expression("Frequency (%) of species " * italic(j)), 
@@ -328,12 +328,14 @@ FD_y_plot <- FD_dat %>%
 FD_plot <- plot_grid(FD_x_plot + theme(legend.position="none"), 
                      FD_y_plot + theme(legend.position="none"), 
                      labels = c("A.", "B."), nrow = 1, align = 'h')
-shared_legend <- get_legend(FD_x_plot + theme(legend.position = c(0.5, 0.58)))
+shared_legend <- get_legend(FD_x_plot + theme(legend.position = c(0.5, 0.58), 
+                                              legend.title = element_text(size = 14),
+                                              legend.text = element_text(size = 14)))
 FD_plot <- plot_grid(FD_plot, shared_legend, nrow = 1, rel_widths = c(3, 0.3)) %>%
   ggdraw() + 
-  draw_label(expression("Slope = FD " != alpha), x = 0.75, y = 0.41, size = 18, colour = "red")
+  draw_label(expression("Slope = FD " != alpha), x = 0.35, y = 0.28, size = 18, colour = "red")
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig3_FD.tiff", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig3_FD.pdf", 
        plot = FD_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 ##### combine two NFD plots #########################################
 
@@ -412,37 +414,140 @@ ryR2_f <- function(R2){(ry * R2)/(R2 + Ky2) - D}
 
 rx <- 1.2
 ry <- 1
-Kx1 <- 16
-Kx2 <- 20
-Ky1 <- 18
+Kx1 <- 12
+Kx2 <- 25
+Ky1 <- 20
 Ky2 <- 12
 D <- 0.2
 
-r_dat <- data.frame("R1" = seq(from  = 0, to = 100, length = 100),
-                    "R2" = seq(from  = 0, to = 100, length = 100)) %>%
+r_dat <- data.frame("R1" = seq(from  = 0, to = 100, length = 1000),
+                    "R2" = seq(from  = 0, to = 100, length = 1000)) %>%
   mutate(rxR1 = rxR1_f(R1),
          rxR2 = rxR2_f(R2),
          ryR1 = ryR1_f(R1),
          ryR2 = ryR2_f(R2))
 
-rxR1_p <- r_dat %>% ggplot() +
-  geom_line(aes(x = R1, y = rxR1))
+rxR1_p <- r_dat %>% 
+  subset(rxR1>0) %>%
+  ggplot() +
+    geom_line(aes(x = R1, y = rxR1), size = 2, color = "#000099") + 
+    geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.4, xend = 12, yend = 0.4, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 12, y = 0.4, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 14) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.52, size = 14) +
+    scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
+    labs(x = expression("Density of resource " * italic(i)),
+         y = " ") + 
+    theme_bw() +
+    theme(panel.border = element_blank(), 
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(), 
+          plot.title = element_text(size = 18),
+          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          aspect.ratio = 0.6,
+          axis.line = element_line(colour = "black"), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
+          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
 
-rxR2_p <- r_dat %>% ggplot() +
-  geom_line(aes(x = R2, y = rxR2))
+rxR2_p <- r_dat %>% 
+  subset(rxR2>0) %>%
+  ggplot() +
+    geom_line(aes(x = R2, y = rxR2), size = 2, color = "#000099") + 
+    geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.4, xend = 25, yend = 0.4, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 25, y = 0.4, xend = 25, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 14) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.52, size = 14) +
+    
+    scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
+    labs(x = expression("Density of resource " * italic(j)),
+         y = "") + 
+    theme_bw() +
+    theme(panel.border = element_blank(), 
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(), 
+          plot.title = element_text(size = 18),
+          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          aspect.ratio = 0.6,
+          axis.line = element_line(colour = "black"), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
+          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
 
-ryR1_p <- r_dat %>% ggplot() +
-  geom_line(aes(x = R1, y = ryR1))
+ryR1_p <- r_dat %>% 
+  subset(ryR1>0) %>%
+  ggplot() +
+    geom_line(aes(x = R1, y = ryR1), size = 2, color = "#FF6600") + 
+    geom_abline(intercept = 0.8, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.3, xend = 20, yend = 0.3, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 20, y = 0.3, xend = 20, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 14) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.42, size = 14) +
+    scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
+    labs(x = expression("Density of resource " * italic(i)),
+         y = "") + 
+    theme_bw() +
+    theme(panel.border = element_blank(), 
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(), 
+          plot.title = element_text(size = 18),
+          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          aspect.ratio = 0.6,
+          axis.line = element_line(colour = "black"), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
+          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
 
-ryR2_p <- r_dat %>% ggplot() +
-  geom_line(aes(x = R2, y = ryR2))
+ryR2_p <- r_dat %>% 
+  subset(ryR2>0) %>%
+  ggplot() +
+    geom_line(aes(x = R2, y = ryR2), size = 2, color = "#FF6600") + 
+    geom_abline(intercept = 0.8, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.3, xend = 12, yend = 0.3, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 12, y = 0.3, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 14) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.42, size = 14) +
+    scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
+    labs(x = expression("Density of resource " * italic(j)),
+         y = "") + 
+    theme_bw() +
+    theme(panel.border = element_blank(), 
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(), 
+          plot.title = element_text(size = 18),
+          plot.margin = margin(t = 6, r = 12, b = 6, l = 48, "pt"),
+          aspect.ratio = 0.6,
+          axis.line = element_line(colour = "black"), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank(),
+          axis.title.x = element_text(size = 18, face = "bold", margin = margin(t = 36, r = 0, b = 0, l = 0, "pt")),
+          axis.title.y = element_text(size = 18, face = "bold", margin = margin(t = 0, r = 0, b = 0, l = 0, "pt")))
+  
+#breaks = c(3.2, 16), labels = c(expression(italic(R[ii]^"*")), )
+#
+TCR_plot <- plot_grid(rxR1_p, ryR1_p, rxR2_p, ryR2_p, labels=c("A.", "B.", "C.", "D."), ncol = 2) %>%
+  ggdraw() + 
+    draw_label(expression(italic("per capita") * " growth rate of species " * italic(i)), angle = 90,  x = 0.04, y = 0.5, size = 18) + 
+    draw_label(expression(italic("per capita") * " growth rate of species " * italic(j)), angle = 90,  x = 0.54, y = 0.5, size = 18) + 
+    draw_label(expression(italic(R[ii]^"*")), x = 0.171, y = 0.59, size = 14) +  
+    draw_label(expression(italic(R[ji]^"*")), x = 0.679, y = 0.59, size = 14) + 
+    draw_label(expression(italic(R[ij]^"*")), x = 0.179, y = 0.09, size = 14) + 
+    draw_label(expression(italic(R[jj]^"*")), x = 0.672, y = 0.09, size = 14) + 
+    draw_label(expression(italic(K[ii])), x = 0.204, y = 0.589, size = 14) +  
+    draw_label(expression(italic(K[ji])), x = 0.731, y = 0.589, size = 14) + 
+    draw_label(expression(italic(K[ij])), x = 0.247, y = 0.089, size = 14) + 
+    draw_label(expression(italic(K[jj])), x = 0.705, y = 0.089, size = 14)
 
-TCR_plot <- ggdraw(TCR_plot) + 
-  draw_label(expression("Coexistence region"), x = 0.5, y = 0.6, size = 18) +
-  draw_label(expression("Zero growth isocline of Species " * italic(i)), x = 0.85, y = 0.22, size = 12) + 
-  draw_label(expression("Zero growth isocline of Species " * italic(j)), x = 0.85, y = 0.38, size = 12)
-
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Fig6_TCR.pdf", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig5_TCR.pdf", 
        plot = TCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### Tilman's consumer resource model ##########################################
