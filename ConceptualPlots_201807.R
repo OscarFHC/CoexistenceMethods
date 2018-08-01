@@ -395,7 +395,8 @@ MCR_out <- ggplot() +
         plot.title = element_text(size = 20),
         plot.margin = margin(t = 12, r = 24, b = 12, l = 12, "pt"),
         axis.line = element_line(colour = "black"), 
-        axis.text = element_text(size = 20), 
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
         axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0, "pt")),
         axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 12, b = 0, l = 12, "pt")))
 
@@ -412,15 +413,16 @@ MCR_in <- ggplot() +
         plot.margin = margin(t = 12, r = 12, b = 12, l = 12, "pt"),
         aspect.ratio = 0.6,
         axis.line = element_line(colour = "black"), 
-        axis.text = element_text(size = 14), 
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
         axis.title.x = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 0, l = 0, "pt")),
         axis.title.y = element_text(size = 20, face = "bold", margin = margin(t = 0, r = 12, b = 0, l = 0, "pt")))
 
 MCR_plot <- ggdraw(MCR_out) +
   draw_label(expression("1:1 line"), x = 0.95, y = 0.9, size = 20) + 
-  draw_plot(MCR_in, x = 0.04, y = 0.629, width = 0.5, height = 0.3)
+  draw_plot(MCR_in, x = 0.02, y = 0.629, width = 0.5, height = 0.3)
   
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig4_MCR.tiff", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig4_MCR.eps", 
        plot = MCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### MacArthur's consumer resource model #######################################
