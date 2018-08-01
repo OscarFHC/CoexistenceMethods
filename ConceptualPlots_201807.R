@@ -283,12 +283,12 @@ for (i in c(1:nrow(FD_dat))){
 ##### creating NFD data #############################################
 ##### making NFD plot ###############################################
 FD_x_plot1 <- FD_dat %>% # This plot is just for the legend
-  subset(B %in% c(0.1, 1, 2)) %>% 
+  subset(B %in% c(0.1, 0.5, 1)) %>% 
   ggplot() + 
   geom_line(aes(x = freq, y = InGr_x, linetype = factor(B)), size = 1) + 
   geom_segment(aes(x = 0.4, y = -0.036, xend = 0.6, yend = -0.036), color = "red", size = 2) + 
   geom_segment(aes(x = 0.6, y = -0.036, xend = 0.6, yend = -0.044), color = "red", size = 2) +
-  scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "1", "2"),
+  scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "0.5", "1"),
                         guide_legend("Community \nbiomass (B)")) + 
   labs(x = expression("Frequency (%) of species " * italic(i)), 
        y = expression(paste(italic("per capita"), "growth rate of species ", italic(i)))) + 
@@ -304,12 +304,12 @@ FD_x_plot1 <- FD_dat %>% # This plot is just for the legend
         axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
 
 FD_x_plot <- FD_dat %>%
-  subset(B %in% c(0.1, 1, 2)) %>% 
+  subset(B %in% c(0.1, 0.5, 1)) %>% 
   ggplot() + 
   geom_line(aes(x = freq, y = InGr_x, linetype = factor(B)), size = 1, color = "#000099") + 
-  geom_segment(aes(x = 0.4, y = -0.036, xend = 0.6, yend = -0.036), color = "red", size = 2) + 
-  geom_segment(aes(x = 0.6, y = -0.036, xend = 0.6, yend = -0.044), color = "red", size = 2) +
-  scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "1", "2"),
+  geom_segment(aes(x = 0.4, y = 0.032, xend = 0.6, yend = 0.032), color = "red", size = 2) + 
+  geom_segment(aes(x = 0.6, y = 0.032, xend = 0.6, yend = 0.028), color = "red", size = 2) +
+  scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "0.5", "1"),
                         guide_legend("Community \nbiomass (B)")) + 
   labs(x = expression("Frequency (%) of species " * italic(i)), 
        y = expression(paste(italic("per capita"), "growth rate of species ", italic(i)))) + 
@@ -325,12 +325,12 @@ FD_x_plot <- FD_dat %>%
         axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
 
 FD_y_plot <- FD_dat %>%
-  subset(B %in% c(0.1, 1, 2)) %>% 
+  subset(B %in% c(0.1, 0.5, 1)) %>% 
   ggplot() + 
   geom_line(aes(x = 1 - freq, y = InGr_y, linetype = factor(B)), size = 1, color = "#FF6600") + 
-  geom_segment(aes(x = 0.4, y = -0.0544, xend = 0.6, yend = -0.0544), color = "red", size = 2) + 
-  geom_segment(aes(x = 0.6, y = -0.0736, xend = 0.6, yend = -0.0544), color = "red", size = 2) +
-  scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "1", "2"),
+  geom_segment(aes(x = 0.4, y = 0.0128, xend = 0.6, yend = 0.0128), color = "red", size = 2) + 
+  geom_segment(aes(x = 0.6, y = 0.0128, xend = 0.6, yend = 0.0032), color = "red", size = 2) +
+  scale_linetype_manual(values = c("dotted", "dashed", "solid"), labels = c("0.1", "0.5", "1"),
                         guide_legend("Community \nbiomass (B)")) + 
   labs(x = expression("Frequency (%) of species " * italic(j)), 
        y = expression(paste(italic("per capita"), "growth rate of species ", italic(j))), size = 18) + 
@@ -355,10 +355,10 @@ shared_legend <- get_legend(FD_x_plot1 + theme(legend.position = c(0.5, 0.58),
                                                legend.text = element_text(size = 20)))
 FD_plot <- plot_grid(FD_plot, shared_legend, nrow = 1, rel_widths = c(3, 0.4)) %>%
   ggdraw() + 
-  draw_label(expression("Slope = FD " != alpha), x = 0.345, y = 0.295, size = 20, colour = "red") + 
-  draw_label(expression("Slope = FD " != alpha), x = 0.78, y = 0.42, size = 20, colour = "red")
+  draw_label(expression("Slope = NFD " != alpha), x = 0.345, y = 0.3, size = 20, colour = "red") + 
+  draw_label(expression("Slope = NFD " != alpha), x = 0.78, y = 0.425, size = 20, colour = "red")
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig3_FD.pdf", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig3_FD.tiff", 
        plot = FD_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 ##### combine two NFD plots #########################################
 
