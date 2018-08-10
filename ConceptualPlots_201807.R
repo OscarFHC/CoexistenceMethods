@@ -431,10 +431,10 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig4_MCR.eps",
 #################################################################################
 ##### Tilman's consumer resource model ##########################################
 #################################################################################
-rxR1_f <- function(R1){(rx * R1)/(R1 + Kx1) - D}
-rxR2_f <- function(R2){(rx * R2)/(R2 + Kx2) - D}
-ryR1_f <- function(R1){(ry * R1)/(R1 + Ky1) - D}
-ryR2_f <- function(R2){(ry * R2)/(R2 + Ky2) - D}
+rxR1_f <- function(R1){(rx * R1)/(R1 + Kx1)}
+rxR2_f <- function(R2){(rx * R2)/(R2 + Kx2)}
+ryR1_f <- function(R1){(ry * R1)/(R1 + Ky1)}
+ryR2_f <- function(R2){(ry * R2)/(R2 + Ky2)}
 
 rx <- 1.2
 ry <- 1
@@ -442,7 +442,6 @@ Kx1 <- 12
 Kx2 <- 25
 Ky1 <- 20
 Ky2 <- 12
-D <- 0.2
 
 r_dat <- data.frame("R1" = seq(from  = 0, to = 100, length = 1000),
                     "R2" = seq(from  = 0, to = 100, length = 1000)) %>%
@@ -455,14 +454,17 @@ rxR1_p <- r_dat %>%
   subset(rxR1>0) %>%
   ggplot() +
     geom_line(aes(x = R1, y = rxR1), size = 2, color = "#000099") + 
-    geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
-    geom_segment(x = -30, y = 0.4, xend = 12, yend = 0.4, size = 1.5, linetype = "dashed") + 
-    geom_segment(x = 12, y = 0.4, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 20) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.54, size = 20) +
+    geom_abline(intercept = 1.2, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.6, xend = 12, yend = 0.6, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 12, y = 0.6, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = -30, y = 0.9, xend = 36, yend = 0.9, size = 1.5, linetype = "dashed", colour = "red") + 
+    geom_segment(x = 36, y = 0.9, xend = 36, yend = -0.3, size = 1.5, linetype = "dashed", colour = "red") + 
+    draw_label(expression(italic(r[i])), x = -18.5, y = 1.28, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]))), x = -16, y = 0.74, size = 20) +
+    draw_label(expression("Dilution rate"), x = -8, y = 1.0, size = 20) +
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
-    labs(x = expression("Density of resource " * italic(i)),
+    scale_y_continuous(limits = c(0, 1.4), expand = c(0, 0)) + 
+    labs(x = expression("Availability of resource " * italic(i)),
          y = " ") + 
     theme_bw() +
     theme(panel.border = element_blank(), 
@@ -480,15 +482,17 @@ rxR2_p <- r_dat %>%
   subset(rxR2>0) %>%
   ggplot() +
     geom_line(aes(x = R2, y = rxR2), size = 2, color = "#000099") + 
-    geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
-    geom_segment(x = -30, y = 0.4, xend = 25, yend = 0.4, size = 1.5, linetype = "dashed") + 
-    geom_segment(x = 25, y = 0.4, xend = 25, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[i]), " - D" )), x = -19, y = 1.08, size = 20) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]), " - D" )), x = -16, y = 0.54, size = 20) +
-    
+    geom_abline(intercept = 1.2, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.6, xend = 25, yend = 0.6, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 25, y = 0.6, xend = 25, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = -30, y = 0.9, xend = 75, yend = 0.9, size = 1.5, linetype = "dashed", colour = "red") + 
+    geom_segment(x = 75, y = 0.9, xend = 75, yend = -0.3, size = 1.5, linetype = "dashed", colour = "red") + 
+    draw_label(expression(italic(r[i])), x = -18.5, y = 1.28, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[i]))), x = -16, y = 0.74, size = 20) + 
+    draw_label(expression("Dilution rate"), x = -10, y = 1.0, size = 20) +
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
-    labs(x = expression("Density of resource " * italic(j)),
+    scale_y_continuous(limits = c(0, 1.4), expand = c(0, 0)) + 
+    labs(x = expression("Availability of resource " * italic(j)),
          y = "") + 
     theme_bw() +
     theme(panel.border = element_blank(), 
@@ -506,14 +510,17 @@ ryR1_p <- r_dat %>%
   subset(ryR1>0) %>%
   ggplot() +
     geom_line(aes(x = R1, y = ryR1), size = 2, color = "#FF6600") + 
-    geom_abline(intercept = 0.8, slope = 0, size = 1.5, linetype = "dashed") +
-    geom_segment(x = -30, y = 0.3, xend = 20, yend = 0.3, size = 1.5, linetype = "dashed") + 
-    geom_segment(x = 20, y = 0.3, xend = 20, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 20) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.44, size = 20) +
+    geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.5, xend = 20, yend = 0.5, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 20, y = 0.5, xend = 20, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = -30, y = 0.8, xend = 80, yend = 0.8, size = 1.5, linetype = "dashed", colour = "red") + 
+    geom_segment(x = 80, y = 0.8, xend = 80, yend = -0.3, size = 1.5, linetype = "dashed", colour = "red") + 
+    draw_label(expression(italic(r[j])), x = -16.8, y = 1.06, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]))), x = -16, y = 0.62, size = 20) +
+    draw_label(expression("Dilution rate"), x = -7, y = 0.88, size = 20) +
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
     scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
-    labs(x = expression("Density of resource " * italic(i)),
+    labs(x = expression("Availability of resource " * italic(i)),
          y = "") + 
     theme_bw() +
     theme(panel.border = element_blank(), 
@@ -531,14 +538,17 @@ ryR2_p <- r_dat %>%
   subset(ryR2>0) %>%
   ggplot() +
     geom_line(aes(x = R2, y = ryR2), size = 2, color = "#FF6600") + 
-    geom_abline(intercept = 0.8, slope = 0, size = 1.5, linetype = "dashed") +
-    geom_segment(x = -30, y = 0.3, xend = 12, yend = 0.3, size = 1.5, linetype = "dashed") + 
-    geom_segment(x = 12, y = 0.3, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
-    draw_label(expression(paste(italic(r[j]), " - D" )), x = -19, y = .88, size = 20) +
-    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]), " - D" )), x = -16, y = 0.44, size = 20) +
+    geom_abline(intercept = 1.0, slope = 0, size = 1.5, linetype = "dashed") +
+    geom_segment(x = -30, y = 0.5, xend = 12, yend = 0.5, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = 12, y = 0.5, xend = 12, yend = -0.3, size = 1.5, linetype = "dashed") + 
+    geom_segment(x = -30, y = 0.8, xend = 48, yend = 0.8, size = 1.5, linetype = "dashed", colour = "red") + 
+    geom_segment(x = 48, y = 0.8, xend = 48, yend = -0.3, size = 1.5, linetype = "dashed", colour = "red") +
+    draw_label(expression(italic(r[j])), x = -16.8, y = 1.06, size = 20) +
+    draw_label(expression(paste(frac(1, 2), " ",  italic(r[j]))), x = -16, y = 0.62, size = 20) +
+    draw_label(expression("Dilution rate"), x = -7, y = 0.88, size = 20) +
     scale_x_continuous(limits = c(-30, 100), expand = c(0, 0)) +
     scale_y_continuous(limits = c(0, 1.2), expand = c(0, 0)) + 
-    labs(x = expression("Density of resource " * italic(j)),
+    labs(x = expression("Availability of resource " * italic(j)),
          y = "") + 
     theme_bw() +
     theme(panel.border = element_blank(), 
@@ -556,16 +566,16 @@ TCR_plot <- plot_grid(rxR1_p, ryR1_p, rxR2_p, ryR2_p, labels=c("A.", "B.", "C.",
   ggdraw() + 
     draw_label(expression(italic("per capita") * " growth rate of species " * italic(i)), angle = 90,  x = 0.04, y = 0.5, size = 24) + 
     draw_label(expression(italic("per capita") * " growth rate of species " * italic(j)), angle = 90,  x = 0.54, y = 0.5, size = 24) + 
-    draw_label(expression(italic(R[ii]^"*")), x = 0.171, y = 0.58, size = 20) +  
-    draw_label(expression(italic(R[ji]^"*")), x = 0.679, y = 0.58, size = 20) + 
-    draw_label(expression(italic(R[ij]^"*")), x = 0.179, y = 0.08, size = 20) + 
-    draw_label(expression(italic(R[jj]^"*")), x = 0.672, y = 0.08, size = 20) + 
+    draw_label(expression(italic(R[ii]^"*")), x = 0.279, y = 0.58, size = 20) +  
+    draw_label(expression(italic(R[ji]^"*")), x = 0.915, y = 0.58, size = 20) + 
+    draw_label(expression(italic(R[ij]^"*")), x = 0.405, y = 0.08, size = 20) + 
+    draw_label(expression(italic(R[jj]^"*")), x = 0.825, y = 0.08, size = 20) + 
     draw_label(expression(italic(K[ii])), x = 0.204, y = 0.579, size = 20) +  
     draw_label(expression(italic(K[ji])), x = 0.731, y = 0.579, size = 20) + 
     draw_label(expression(italic(K[ij])), x = 0.247, y = 0.079, size = 20) + 
     draw_label(expression(italic(K[jj])), x = 0.705, y = 0.079, size = 20)
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver3/Fig5_TCR.pdf", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig5_TCR.tiff", 
        plot = TCR_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
 #################################################################################
 ##### Tilman's consumer resource model ##########################################
