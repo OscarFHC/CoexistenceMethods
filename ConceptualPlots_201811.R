@@ -582,7 +582,7 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig5_TCR.tiff",
 #################################################################################
 
 #################################################################################
-##### The nonlinear NFD slope ###################################################
+##### Supplement Fig for nonlinear NFD slope ####################################
 #################################################################################
 ##### The pre-determined model ######################################
 LVmod <- function (Time, State, Pars) {
@@ -599,7 +599,7 @@ State1 <- c(x = 1.5, y = 0.01)
 State2 <- c(x = 0.01, y = 1.2)
 Time <- seq(0, 5000, by = 1)
 ##### Parameter values for the model ################################
-##### creating the fake data set ####################################
+##### Simulative imvasion experiment and plotting ###################
 Growth_Curve <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) %>%
   bind_rows(as.data.frame(ode(func = LVmod, y = State2, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000))) %>%
   mutate(FreqX = x/(x+y),
@@ -611,51 +611,146 @@ FX <- ggplot() +
   geom_line(data = subset(Growth_Curve, GrX > 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2) +
   geom_line(data = subset(Growth_Curve, GrX < 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2, linetype = "dotted") +
   geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) +  
-  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(-0.1, 0.05)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.035, 0.035)) + 
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
   labs(x = expression("Frequency (%) of species " * italic(i)), 
-       y = expression(paste(italic("per capita"), "growth rate of species ", italic(j)))) + 
+       y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(i))))) + 
   theme_bw() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 12, 0, 48), "pt"),
-        plot.title = element_text(size = 20, vjust = 0.2),
+        plot.margin = unit(c(36, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
         axis.line = element_line(colour = "black"), 
-        axis.text = element_text(size = 20),
-        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
-        axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)))
 
 FY <- ggplot() + 
   geom_line(data = subset(Growth_Curve, GrY > 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2) +
   geom_line(data = subset(Growth_Curve, GrY < 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2, linetype = "dotted") +
   geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) + 
-  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(-0.1, 0.05)) + 
-  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  scale_x_reverse(expand = c(0, 0), limits = c(1, 0)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.035, 0.035)) +
   labs(x = expression("Frequency (%) of species " * italic(j)), 
-       y = expression(paste(italic("per capita"), "growth rate of species ", italic(j)))) + 
+       y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(j))))) + 
   theme_bw() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(), 
-        plot.margin = unit(c(0, 12, 0, 48), "pt"),
-        plot.title = element_text(size = 20, vjust = 0.2),
+        plot.margin = unit(c(0, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
         axis.line = element_line(colour = "black"), 
-        axis.text = element_text(size = 20),
-        axis.title.x = element_text(size = 24, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
-        axis.title.y = element_text(size = 24, face = "bold", margin = margin(t = 0, r = 8, b = 0, l = 0)))
-##### creating the fake data set ####################################
-##### use fitted parameters to plot a fitted line ###################
-FD_plot <- plot_grid(FD_x_plot + theme(legend.position="none"), 
-                     FD_y_plot + theme(legend.position="none"), 
-                     labels = c("A.", "B."), nrow = 1, align = 'h')
-shared_legend <- get_legend(FD_x_plot1 + theme(legend.position = c(0.5, 0.58), 
-                                               legend.title = element_text(size = 20),
-                                               legend.text = element_text(size = 20)))
-FD_plot <- plot_grid(FD_plot, shared_legend, nrow = 1, rel_widths = c(3, 0.4)) %>%
-  ggdraw() + 
-  draw_label(expression("Slope = NFD " != alpha), x = 0.345, y = 0.3, size = 20, colour = "red") + 
-  draw_label(expression("Slope = NFD " != alpha), x = 0.78, y = 0.425, size = 20, colour = "red")
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 20, margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 20, margin = margin(t = 12, r = 0, b = 12, l = 0)))
 
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig3_FD.tiff", 
-       plot = FD_plot, width = 35, height = 24, units = c("cm"), dpi = 600)
+TotD <- ggplot() + 
+  geom_line(data = Growth_Curve, aes(x = FreqX, y = x+y), color = "black", size = 2) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(0.8, 1.6)) +
+  labs(x = expression("Frequency (%) of species " * italic(i)), 
+       y = expression(atop("Total", "community density"))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.margin = unit(c(0, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 20, margin = margin(t = 12, r = 10, b = 12, l = 0)))
+
+FD_S_left <- plot_grid(FX, FY, TotD,
+                       labels = c("a)", "b)", "c)"), ncol = 1, align = 'V')
+##### Simulative imvasion experiment and plotting ###################
+##### The pre-determined model with non linear competition coef #####
+LVmod <- function (Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    dx = x*(rx/Kx)*(1 - a11*x^2 - a21*y)
+    dy = y*(ry/Ky)*(1 - a21*x - a22*y^2)
+    return(list(c(dx, dy)))
+  })
+}
+##### The pre-determined model with non linear competition coef #####
+##### Parameter values for the model ################################
+Pars <- c(Kx = 1.5, Ky = 1.2, rx = 0.1, ry = 0.08, a11 = 1, a12 = 0.6, a21 = 0.6, a22 = 1.2)
+State1 <- c(x = 1.5, y = 0.01)
+State2 <- c(x = 0.01, y = 1.2)
+Time <- seq(0, 1000, by = 1)
+##### Parameter values for the model ################################
+##### Simulative imvasion experiment and plotting ###################
+Growth_Curve <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) %>%
+  bind_rows(as.data.frame(ode(func = LVmod, y = State2, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000))) %>%
+  mutate(FreqX = x/(x+y),
+         FreqY = y/(x+y),
+         GrX = (0.1/1.5)*(1 - 1*x^2 - 0.6*y),
+         GrY = (0.08/1.2)*(1 - 0.6*x - 1.2*y^2))
+
+FX2 <- ggplot() + 
+  geom_line(data = subset(Growth_Curve, GrX > 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2) +
+  geom_line(data = subset(Growth_Curve, GrX < 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2, linetype = "dotted") +
+  geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) +  
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.09, 0.035)) + 
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  labs(x = expression("Frequency (%) of species " * italic(i)), 
+       y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(i))))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.margin = unit(c(36, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)))
+
+FY2 <- ggplot() + 
+  geom_line(data = subset(Growth_Curve, GrY > 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2) +
+  geom_line(data = subset(Growth_Curve, GrY < 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2, linetype = "dotted") +
+  geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) + 
+  scale_x_reverse(expand = c(0, 0), limits = c(1, 0)) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.09, 0.035)) +
+  labs(x = expression("Frequency (%) of species " * italic(j)), 
+       y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(j))))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.margin = unit(c(0, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 20, margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 20, margin = margin(t = 12, r = 0, b = 12, l = 0)))
+
+TotD2 <- ggplot() + 
+  geom_line(data = Growth_Curve, aes(x = FreqX, y = x+y), color = "black", size = 2) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(0.8, 1.6)) +
+  labs(x = expression("Frequency (%) of species " * italic(i)), 
+       y = expression(atop("Total", "community density"))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.margin = unit(c(0, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 20, margin = margin(t = 12, r = 10, b = 12, l = 0)))
+
+FD_S_right <- plot_grid(FX2, FY2, TotD2,
+                        labels = c("d)", "e)", "f)"), ncol = 1, align = 'V')
+
+FD_S <- plot_grid(FD_S_left, FD_S_right, nrow = 1, align = 'h')
+                  
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/FigS1_FD.jpeg", 
+       plot = FD_S, width = 35, height = 24, units = c("cm"), dpi = 600)
+##### Simulative imvasion experiment and plotting ###################
+#################################################################################
+##### Supplement Fig for nonlinear NFD slope ####################################
+#################################################################################
