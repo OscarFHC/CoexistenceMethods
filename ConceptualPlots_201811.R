@@ -606,7 +606,21 @@ Growth_Curve <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times 
          FreqY = y/(x+y),
          GrX = (0.1/1.5)*(1 - 1*x - 0.6*y),
          GrY = (0.08/1.2)*(1 - 0.6*x - 1.2*y))
+##### The following are just confirming the above calculation is correct #####
+Growth_Curve_raw <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) 
+grx = c()
+for (i in 1: (nrow(Growth_Curve_raw)-1)){
+  grx = c(grx, (Growth_Curve_raw$x[i+1] - Growth_Curve_raw$x[i]))
+}
+Growth_Curve_raw %>%
+  ggplot(aes(x = time)) +
+    geom_line(aes(y=x), color = "blue") +
+    geom_line(aes(y=y), color = "green")
 
+ggplot() +
+  geom_line(aes(x = FreqX, y = GrX), data = Growth_Curve[1:5000,], color = "blue") +
+  geom_line(aes(x = Growth_Curve$FreqX[1:5000], y = grx), color = "green")
+##### The following are just confirming the above calculation is correct #####
 FX <- ggplot() + 
   geom_line(data = subset(Growth_Curve, GrX > 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2) +
   geom_line(data = subset(Growth_Curve, GrX < 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2, linetype = "dotted") +
