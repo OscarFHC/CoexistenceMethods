@@ -587,45 +587,46 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/Fig5_TCR.tiff",
 ##### The pre-determined model ######################################
 LVmod <- function (Time, State, Pars) {
   with(as.list(c(State, Pars)), {
-    dx = x*(rx/Kx)*(1 - a11*x - a21*y)
-    dy = y*(ry/Ky)*(1 - a21*x - a22*y)
+    dx = x*(rx/Kx)*(Kx - a11*x - a12*y)
+    dy = y*(ry/Ky)*(Ky - a21*x - a22*y)
     return(list(c(dx, dy)))
   })
 }
 ##### The pre-determined model ######################################
 ##### Parameter values for the model ################################
-Pars <- c(Kx = 1.5, Ky = 1.2, rx = 0.1, ry = 0.08, a11 = 1, a12 = 0.6, a21 = 0.6, a22 = 1.2)
+Pars <- c(Kx = 1.5, Ky = 1.2, rx = 0.1, ry = 0.08, a11 = 1, a12 = 0.8, a21 = 0.2, a22 = 1)
 State1 <- c(x = 1.5, y = 0.01)
 State2 <- c(x = 0.01, y = 1.2)
-Time <- seq(0, 5000, by = 1)
+Time <- seq(0, 10000, by = 1)
 ##### Parameter values for the model ################################
 ##### Simulative imvasion experiment and plotting ###################
 Growth_Curve <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) %>%
   bind_rows(as.data.frame(ode(func = LVmod, y = State2, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000))) %>%
   mutate(FreqX = x/(x+y),
          FreqY = y/(x+y),
-         GrX = (0.1/1.5)*(1 - 1*x - 0.6*y),
-         GrY = (0.08/1.2)*(1 - 0.6*x - 1.2*y))
+         GrX = (Pars["rx"]/Pars["Kx"])*(Pars["Kx"] - Pars["a11"]*x - Pars["a12"]*y),
+         GrY = (Pars["ry"]/Pars["Ky"])*(Pars["Ky"] - Pars["a21"]*x - Pars["a22"]*y))
 ##### The following are just confirming the above calculation is correct #####
 Growth_Curve_raw <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) 
+Growth_Curve_raw %>%
+  ggplot(aes(x = time)) +
+  geom_line(aes(y=x), color = "blue") +
+  geom_line(aes(y=y), color = "green")
+
 grx = c()
 for (i in 1: (nrow(Growth_Curve_raw)-1)){
   grx = c(grx, (Growth_Curve_raw$x[i+1] - Growth_Curve_raw$x[i]))
 }
-Growth_Curve_raw %>%
-  ggplot(aes(x = time)) +
-    geom_line(aes(y=x), color = "blue") +
-    geom_line(aes(y=y), color = "green")
 
 ggplot() +
-  geom_line(aes(x = FreqX, y = GrX), data = Growth_Curve[1:5000,], color = "blue") +
-  geom_line(aes(x = Growth_Curve$FreqX[1:5000], y = grx), color = "green")
+  #geom_line(aes(x = FreqX, y = GrX), data = Growth_Curve[1:5000,], color = "blue") +
+  geom_line(aes(x = Growth_Curve$FreqX[5001:10000], y = grx), color = "green")
 ##### The following are just confirming the above calculation is correct #####
 FX <- ggplot() + 
   geom_line(data = subset(Growth_Curve, GrX > 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2) +
   geom_line(data = subset(Growth_Curve, GrX < 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2, linetype = "dotted") +
-  geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) +  
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.035, 0.035)) + 
+  geom_abline(slope = 0, intercept = 0, color = "black", size = 1) +  
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.015, 0.04)) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
   labs(x = expression("Frequency (%) of species " * italic(i)), 
        y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(i))))) + 
@@ -643,9 +644,9 @@ FX <- ggplot() +
 FY <- ggplot() + 
   geom_line(data = subset(Growth_Curve, GrY > 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2) +
   geom_line(data = subset(Growth_Curve, GrY < 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2, linetype = "dotted") +
-  geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) + 
+  geom_abline(slope = 0, intercept = 0, color = "black", size = 1) + 
   scale_x_reverse(expand = c(0, 0), limits = c(1, 0)) + 
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.035, 0.035)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.005, 0.065)) +
   labs(x = expression("Frequency (%) of species " * italic(j)), 
        y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(j))))) + 
   theme_bw() +
@@ -662,7 +663,7 @@ FY <- ggplot() +
 TotD <- ggplot() + 
   geom_line(data = Growth_Curve, aes(x = FreqX, y = x+y), color = "black", size = 2) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
-  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(0.8, 1.6)) +
+  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(1.2, 1.85)) +
   labs(x = expression("Frequency (%) of species " * italic(i)), 
        y = expression(atop("Total", "community density"))) + 
   theme_bw() +
@@ -680,33 +681,39 @@ FD_S_left <- plot_grid(FX, FY, TotD,
                        labels = c("a)", "b)", "c)"), ncol = 1, align = 'V')
 ##### Simulative imvasion experiment and plotting ###################
 ##### The pre-determined model with non linear competition coef #####
-LVmod <- function (Time, State, Pars) {
+LVmod2 <- function (Time, State, Pars) {
   with(as.list(c(State, Pars)), {
-    dx = x*(rx/Kx)*(1 - a11*x^2 - a21*y)
-    dy = y*(ry/Ky)*(1 - a21*x - a22*y^2)
+    dx = x*(rx/Kx)*(Kx - a11*x - (a12*y)*y)
+    dy = y*(ry/Ky)*(Ky - (a21*x)*x - a22*y)
     return(list(c(dx, dy)))
   })
 }
 ##### The pre-determined model with non linear competition coef #####
 ##### Parameter values for the model ################################
-Pars <- c(Kx = 1.5, Ky = 1.2, rx = 0.1, ry = 0.08, a11 = 1, a12 = 0.6, a21 = 0.6, a22 = 1.2)
+Pars <- c(Kx = 1.5, Ky = 1.2, rx = 0.1, ry = 0.08, a11 = 1, a12 = 0.8, a21 = 0.2, a22 = 1)
 State1 <- c(x = 1.5, y = 0.01)
 State2 <- c(x = 0.01, y = 1.2)
-Time <- seq(0, 1000, by = 1)
+Time <- seq(0, 5000, by = 1)
+
+Growth_Curve2_raw <- as.data.frame(ode(func = LVmod2, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) 
+Growth_Curve2_raw %>%
+  ggplot(aes(x = time)) +
+  geom_line(aes(y=x), color = "blue") +
+  geom_line(aes(y=y), color = "green")
 ##### Parameter values for the model ################################
 ##### Simulative imvasion experiment and plotting ###################
-Growth_Curve <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) %>%
-  bind_rows(as.data.frame(ode(func = LVmod, y = State2, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000))) %>%
+Growth_Curve2 <- as.data.frame(ode(func = LVmod2, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) %>%
+  bind_rows(as.data.frame(ode(func = LVmod2, y = State2, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000))) %>%
   mutate(FreqX = x/(x+y),
          FreqY = y/(x+y),
-         GrX = (0.1/1.5)*(1 - 1*x^2 - 0.6*y),
-         GrY = (0.08/1.2)*(1 - 0.6*x - 1.2*y^2))
+         GrX = (Pars["rx"]/Pars["Kx"])*(Pars["Kx"] - Pars["a11"]*x - (Pars["a12"]*y)*y),
+         GrY = (Pars["ry"]/Pars["Ky"])*(Pars["Ky"] - (Pars["a21"]*x)*x - Pars["a22"]*y))
 
 FX2 <- ggplot() + 
-  geom_line(data = subset(Growth_Curve, GrX > 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2) +
-  geom_line(data = subset(Growth_Curve, GrX < 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2, linetype = "dotted") +
-  geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) +  
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.09, 0.035)) + 
+  geom_line(data = subset(Growth_Curve2, GrX > 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2) +
+  geom_line(data = subset(Growth_Curve2, GrX < 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2, linetype = "dotted") +
+  geom_abline(slope = 0, intercept = 0, color = "black", size = 1) +  
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.01, 0.025)) + 
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
   labs(x = expression("Frequency (%) of species " * italic(i)), 
        y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(i))))) + 
@@ -722,11 +729,11 @@ FX2 <- ggplot() +
         axis.title.y = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)))
 
 FY2 <- ggplot() + 
-  geom_line(data = subset(Growth_Curve, GrY > 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2) +
-  geom_line(data = subset(Growth_Curve, GrY < 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2, linetype = "dotted") +
-  geom_abline(slope = 0, intercept = 0, color = "black", size = 1.5) + 
+  geom_line(data = subset(Growth_Curve2, GrY > 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2) +
+  geom_line(data = subset(Growth_Curve2, GrY < 0), aes(x = FreqY, y = GrY), color = "#FF6600", size = 2, linetype = "dotted") +
+  geom_abline(slope = 0, intercept = 0, color = "black", size = 1) + 
   scale_x_reverse(expand = c(0, 0), limits = c(1, 0)) + 
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.09, 0.035)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.0025, 0.052)) +
   labs(x = expression("Frequency (%) of species " * italic(j)), 
        y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(j))))) + 
   theme_bw() +
@@ -741,9 +748,9 @@ FY2 <- ggplot() +
         axis.title.y = element_text(size = 20, margin = margin(t = 12, r = 0, b = 12, l = 0)))
 
 TotD2 <- ggplot() + 
-  geom_line(data = Growth_Curve, aes(x = FreqX, y = x+y), color = "black", size = 2) +
+  geom_line(data = Growth_Curve2, aes(x = FreqX, y = x+y), color = "black", size = 2) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
-  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(0.8, 1.6)) +
+  scale_y_continuous(expand = c(-0.03, 0.03), limits = c(1.2, 2.3)) +
   labs(x = expression("Frequency (%) of species " * italic(i)), 
        y = expression(atop("Total", "community density"))) + 
   theme_bw() +
@@ -762,7 +769,7 @@ FD_S_right <- plot_grid(FX2, FY2, TotD2,
 
 FD_S <- plot_grid(FD_S_left, FD_S_right, nrow = 1, align = 'h')
                   
-ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/FigS1_FD.jpeg", 
+ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/FigS1_FD.pdf", 
        plot = FD_S, width = 35, height = 24, units = c("cm"), dpi = 600)
 ##### Simulative imvasion experiment and plotting ###################
 #################################################################################
