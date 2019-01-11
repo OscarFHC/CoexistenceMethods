@@ -775,3 +775,62 @@ ggsave(filename = "D:/Manuscript/CoexistenceMethods_Figs/Ver2/FigS1_FD.pdf",
 #################################################################################
 ##### Supplement Fig for nonlinear NFD slope ####################################
 #################################################################################
+
+LVmod <- function (Time, State, Pars) {
+  with(as.list(c(State, Pars)), {
+    dx = x*(rx)*(1 - (x + a12*(B - x))/B)
+    dy = y*(ry)*(1 - (a21*(B - y) + y)/B)
+    return(list(c(dx, dy)))
+  })
+}
+##### The pre-determined model ######################################
+##### Parameter values for the model ################################
+B <- 1
+Pars <- c(rx = 0.1, ry = 0.08, a12 = 0.8, a21 = 0.2, B = B)
+State1 <- c(x = 0.5, y = 0.01)
+State2 <- c(x = 0.01, y = 0.5)
+Time <- seq(0, 10000, by = 1)
+
+##### Parameter values for the model ################################
+##### Simulative imvasion experiment and plotting ###################
+Growth_Curve <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) %>%
+  bind_rows(as.data.frame(ode(func = LVmod, y = State2, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000))) %>%
+  mutate(FreqX = x/B,
+         FreqY = y/B,
+         GrX = (Pars["rx"])*(1 - (x + Pars["a12"]*(B - x))/Pars["B"]),
+         GrY = (Pars["ry"])*(1 - (Pars["a21"]*(B - y) - y)/Pars["B"]))
+##### The following are just confirming the above calculation is correct #####
+Growth_Curve_raw <- as.data.frame(ode(func = LVmod, y = State1, parms = Pars, times = Time, hmax = 0.1, maxsteps = 10000)) 
+Growth_Curve_raw %>%
+  ggplot(aes(x = time)) +
+  geom_line(aes(y=x), color = "blue") +
+  geom_line(aes(y=y), color = "green")
+
+grx = c()
+for (i in 1: (nrow(Growth_Curve_raw)-1)){
+  grx = c(grx, (Growth_Curve_raw$x[i+1] - Growth_Curve_raw$x[i]))
+}
+
+ggplot() +
+  #geom_line(aes(x = FreqX, y = GrX), data = Growth_Curve[1:5000,], color = "blue") +
+  geom_line(aes(x = Growth_Curve$FreqX[10000], y = grx), color = "green")
+##### The following are just confirming the above calculation is correct #####
+FX <- ggplot() + 
+  geom_line(data = subset(Growth_Curve, GrX > 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2) +
+  geom_line(data = subset(Growth_Curve, GrX < 0), aes(x = FreqX, y = GrX), color = "#000099", size = 2, linetype = "dotted") +
+  geom_abline(slope = 0, intercept = 0, color = "black", size = 1) +  
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.015, 0.04)) +
+  #scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  labs(x = expression("Frequency (%) of species " * italic(i)), 
+       y = expression(atop(paste(italic("per capita"), "growth rate"), paste("of species ", italic(i))))) + 
+  theme_bw() +
+  theme(panel.border = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.margin = unit(c(36, 12, 0, 24), "pt"),
+        plot.title = element_text(size = 20, vjust = 0.3),
+        axis.line = element_line(colour = "black"), 
+        axis.text = element_text(size = 12),
+        axis.title.x = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)),
+        axis.title.y = element_text(size = 20, face = "bold", margin = margin(t = 12, r = 0, b = 12, l = 0)))
+
